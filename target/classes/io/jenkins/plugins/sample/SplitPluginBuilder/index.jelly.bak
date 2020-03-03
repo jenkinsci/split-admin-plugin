@@ -1,0 +1,14 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:l="/lib/layout" xmlns:st="jelly:stapler">
+    <l:layout title="Split"> 
+        <l:main-panel> 
+	    <form action="submit" method="post">
+            <h1> 
+		Task: 
+                Split Name: ${it.splitName} 
+                Environment Name: ${it.environmentName} 
+                Workspace Name: ${it.workspaceName} 
+            </h1>
+        </l:main-panel>
+    </l:layout>
+</j:jelly>

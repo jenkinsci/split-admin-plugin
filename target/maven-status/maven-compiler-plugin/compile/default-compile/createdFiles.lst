@@ -1,0 +1,12 @@
+io/jenkins/plugins/sample/SplitPluginBuilder/DescriptorImpl/doCheckWorkspaceName.stapler
+io/jenkins/plugins/sample/SplitAPI.class
+io/jenkins/plugins/sample/SplitPluginBuilder/DescriptorImpl/doCheckSplitName.stapler
+io/jenkins/plugins/sample/Messages.class
+io/jenkins/plugins/sample/SplitPluginBuilder/DescriptorImpl/doCheckEnvironmentName.stapler
+io/jenkins/plugins/sample/SplitPluginBuilder.stapler
+io/jenkins/plugins/sample/SplitPluginBuilder.class
+META-INF/annotations/hudson.Extension.txt
+META-INF/annotations/org.kohsuke.accmod.Restricted
+io/jenkins/plugins/sample/SplitPluginBuilder$DescriptorImpl.class
+META-INF/annotations/org.jenkinsci.Symbol
+META-INF/annotations/hudson.Extension

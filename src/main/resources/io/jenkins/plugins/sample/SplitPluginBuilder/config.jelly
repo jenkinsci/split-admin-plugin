@@ -1,0 +1,36 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+     <f:entry title="Task" field="splitTask">
+        <select name="splitTask">
+            	<f:option value="createSplit" selected="${instance.splitTask.equals('createSplit')? 'true':null}">Create Split</f:option>
+            	<f:option value="addToEnvironment" selected="${instance.splitTask.equals('addToEnvironment')? 'true':null}">Add Split To Environment</f:option>
+            	<f:option value="addKeyToWhitelist" selected="${instance.splitTask.equals('addKeyToWhitelist')? 'true':null}">Add Key To Whitelist</f:option>
+            	<f:option value="killSplit" selected="${instance.splitTask.equals('killSplit')? 'true':null}">Kill Split</f:option>               
+            	<f:option value="deleteSplit" selected="${instance.splitTask.equals('deleteSplit')? 'true':null}">Delete Split</f:option>               
+        </select>
+    </f:entry>
+    <f:entry title="Workspace Name" field="workspaceName">
+        <f:textbox checkUrl="'${rootURL}/descriptorByName/io.jenkins.plugins.sample.SplitPluginBuilder/checkWorkspaceName?workspaceName='+encodeURIComponent(this.value)" />
+    </f:entry>
+    <f:entry title="Environment Name" field="environmentName">
+        <f:textbox checkUrl="'${rootURL}/descriptorByName/io.jenkins.plugins.sample.SplitPluginBuilder/checkEnvironmentName?environmentName='+encodeURIComponent(this.value)" />
+    </f:entry>
+    <f:entry title="Split Name" field="splitName">
+        <f:textbox checkUrl="'${rootURL}/descriptorByName/io.jenkins.plugins.sample.SplitPluginBuilder/checkSplitName?splitName='+encodeURIComponent(this.value)" />
+    </f:entry>
+    <f:entry title="TrafficType Name" field="trafficTypeName">
+        <f:textbox />
+    </f:entry>
+    <f:entry title="Split Definitions" field="splitDefinitions">
+        <f:textbox />
+    </f:entry>
+    <f:entry title="Treatment Name" field="treatmentName">
+        <f:textbox />
+    </f:entry>
+    <f:entry title="Whitelist Key" field="whitelistKey">
+        <f:textbox />
+    </f:entry>
+    <f:entry title="Segment Name" field="segmentName">
+        <f:textbox />
+    </f:entry>
+</j:jelly>

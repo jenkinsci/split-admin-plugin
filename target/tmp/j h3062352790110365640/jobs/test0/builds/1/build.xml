@@ -1,0 +1,45 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<build>
+  <actions>
+    <hudson.model.CauseAction>
+      <causeBag class="linked-hash-map">
+        <entry>
+          <hudson.model.Cause_-LegacyCodeCause>
+            <stackTrace>
+              <trace>hudson.model.Cause$LegacyCodeCause.&lt;init&gt;(Cause.java:135)</trace>
+              <trace>hudson.model.AbstractProject.scheduleBuild2(AbstractProject.java:839)</trace>
+              <trace>org.jvnet.hudson.test.JenkinsRule.buildAndAssertSuccess(JenkinsRule.java:1389)</trace>
+              <trace>io.jenkins.plugins.sample.SplitPluginBuilderTest.testCreatSplit(SplitPluginBuilderTest.java:34)</trace>
+              <trace>java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)</trace>
+              <trace>java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)</trace>
+              <trace>java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)</trace>
+              <trace>java.base/java.lang.reflect.Method.invoke(Method.java:564)</trace>
+              <trace>org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)</trace>
+              <trace>org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)</trace>
+              <trace>org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)</trace>
+              <trace>org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)</trace>
+              <trace>org.jvnet.hudson.test.JenkinsRule$1.evaluate(JenkinsRule.java:600)</trace>
+              <trace>org.junit.internal.runners.statements.FailOnTimeout$CallableStatement.call(FailOnTimeout.java:298)</trace>
+              <trace>org.junit.internal.runners.statements.FailOnTimeout$CallableStatement.call(FailOnTimeout.java:292)</trace>
+              <trace>java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)</trace>
+              <trace>java.base/java.lang.Thread.run(Thread.java:844)</trace>
+            </stackTrace>
+          </hudson.model.Cause_-LegacyCodeCause>
+          <int>1</int>
+        </entry>
+      </causeBag>
+    </hudson.model.CauseAction>
+  </actions>
+  <queueId>1</queueId>
+  <timestamp>1583183918434</timestamp>
+  <startTime>1583183918445</startTime>
+  <result>SUCCESS</result>
+  <duration>669</duration>
+  <charset>UTF-8</charset>
+  <keepLog>false</keepLog>
+  <builtOn></builtOn>
+  <workspace>/Users/bilalal-shahwany/Desktop/Projects/Java/SplitJenkins/split-plugin/target/tmp/j h3062352790110365640/workspace/test0</workspace>
+  <hudsonVersion>2.164.3</hudsonVersion>
+  <scm class="hudson.scm.NullChangeLogParser"/>
+  <culprits class="com.google.common.collect.EmptyImmutableSortedSet"/>
+</build>

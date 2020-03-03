@@ -1,0 +1,27 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<project>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>false</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <io.jenkins.plugins.sample.SplitPluginBuilder>
+      <splitTask>creatSplit</splitTask>
+      <splitName>SplitPlugin_Jenkins_Test</splitName>
+      <environmentName></environmentName>
+      <workspaceName>Default</workspaceName>
+      <trafficTypeName>user</trafficTypeName>
+      <splitDefinitions></splitDefinitions>
+      <treatmentName></treatmentName>
+      <whitelistKey></whitelistKey>
+      <apiKey>9enig1pcv629481bjme33o4dn0kg26n7m6d9</apiKey>
+    </io.jenkins.plugins.sample.SplitPluginBuilder>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>

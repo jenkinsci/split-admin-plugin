@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Built-By: bilalal-shahwany
+Created-By: Apache Maven
+Build-Jdk: 10.0.1
+Extension-Name: split-plugin
+Specification-Title: The Jenkins Plugins Parent POM Project
+Implementation-Title: split-plugin
+Implementation-Version: 1.0
+Group-Id: io.jenkins.plugins
+Short-Name: split-plugin
+Long-Name: TODO Plugin
+Minimum-Java-Version: 1.8
+Plugin-Version: 1.0
+Hudson-Version: 2.164.3
+Jenkins-Version: 2.164.3
+Plugin-Dependencies: structs:1.20
+Plugin-Developers: 
+Plugin-License-Name: MIT License
+Plugin-License-Url: https://opensource.org/licenses/MIT
+Plugin-ScmUrl: https://github.com/jenkinsci/plugin-pom/split-plugin
+

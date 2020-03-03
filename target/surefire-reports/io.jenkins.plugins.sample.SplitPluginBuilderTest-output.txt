@@ -1,0 +1,51 @@
+=== Starting testSplitPlugin(io.jenkins.plugins.sample.SplitPluginBuilderTest)
+2020-03-02 15:24:44.482:INFO:oejs.Server:Executing testSplitPlugin(io.jenkins.plugins.sample.SplitPluginBuilderTest): jetty-9.4.5.v20170502
+2020-03-02 15:24:44.489:INFO:oejw.StandardDescriptorProcessor:Executing testSplitPlugin(io.jenkins.plugins.sample.SplitPluginBuilderTest): NO JSP Support for /jenkins, did not find org.eclipse.jetty.jsp.JettyJspServlet
+2020-03-02 15:24:44.490:INFO:oejs.session:Executing testSplitPlugin(io.jenkins.plugins.sample.SplitPluginBuilderTest): DefaultSessionIdManager workerName=node0
+2020-03-02 15:24:44.490:INFO:oejs.session:Executing testSplitPlugin(io.jenkins.plugins.sample.SplitPluginBuilderTest): No SessionScavenger set, using defaults
+2020-03-02 15:24:44.490:INFO:oejs.session:Executing testSplitPlugin(io.jenkins.plugins.sample.SplitPluginBuilderTest): Scavenging every 660000ms
+2020-03-02 15:24:44.492:INFO:oejsh.ContextHandler:Executing testSplitPlugin(io.jenkins.plugins.sample.SplitPluginBuilderTest): Started o.e.j.w.WebAppContext@f680f10{/jenkins,file:///Users/bilalal-shahwany/Desktop/Projects/Java/SplitJenkins/split-plugin/target/jenkins-for-test/,AVAILABLE}{/Users/bilalal-shahwany/Desktop/Projects/Java/SplitJenkins/split-plugin/target/jenkins-for-test}
+2020-03-02 15:24:44.492:INFO:oejs.AbstractConnector:Executing testSplitPlugin(io.jenkins.plugins.sample.SplitPluginBuilderTest): Started ServerConnector@715e1b21{HTTP/1.1,[http/1.1]}{localhost:52120}
+2020-03-02 15:24:44.493:INFO:oejs.Server:Executing testSplitPlugin(io.jenkins.plugins.sample.SplitPluginBuilderTest): Started @10197ms
+   0.015 [id=67]	INFO	o.jvnet.hudson.test.JenkinsRule#createWebServer: Running on http://localhost:52120/jenkins/
+   0.032 [id=74]	INFO	jenkins.InitReactorRunner$1#onAttained: Started initialization
+   0.034 [id=73]	INFO	jenkins.InitReactorRunner$1#onAttained: Listed all plugins
+   0.216 [id=74]	INFO	jenkins.InitReactorRunner$1#onAttained: Prepared all plugins
+   0.219 [id=75]	INFO	jenkins.InitReactorRunner$1#onAttained: Started all plugins
+   0.220 [id=77]	INFO	jenkins.InitReactorRunner$1#onAttained: Augmented all extensions
+   0.223 [id=78]	INFO	jenkins.InitReactorRunner$1#onAttained: Loaded all jobs
+   0.462 [id=76]	INFO	jenkins.InitReactorRunner$1#onAttained: Completed initialization
+Response: 
+{"objects":[{"name":"Default","id":"d2f02200-1515-11e9-a61f-0acdbc0eaddc"},{"name":"Mylo","id":"fe234b40-58cc-11ea-8c54-0ad87b86182f"},{"name":"myApp","id":"e1d00630-6152-11e9-8af6-0a1c02136776"}],"offset":0,"limit":10,"totalCount":3}
+Response: 
+{"name":"SplitPlugin_Jenkins_Test","description":"Created From Jenkins Split Admin API","trafficType":{"id":"e6910420-5c85-11e9-bbc9-12a5cc2af8fe","name":"user"},"creationTime":1583191486133,"tags":null}
+   1.829 [id=82]	INFO	hudson.model.Run#execute: test0 #1 main build action completed: SUCCESS
+Response: 
+{"objects":[{"name":"Default","id":"d2f02200-1515-11e9-a61f-0acdbc0eaddc"},{"name":"Mylo","id":"fe234b40-58cc-11ea-8c54-0ad87b86182f"},{"name":"myApp","id":"e1d00630-6152-11e9-8af6-0a1c02136776"}],"offset":0,"limit":10,"totalCount":3}
+Response: 
+{"name":"SplitPlugin_Jenkins_Test","environment":{"id":"029bd160-7e36-11e8-9a1c-0acd31e5aef0","name":"Production"},"trafficType":{"id":"e6910420-5c85-11e9-bbc9-12a5cc2af8fe","name":"user"},"killed":false,"treatments":[{"name":"premium","description":""},{"name":"standard","description":""},{"name":"current","description":""}],"defaultTreatment":"current","trafficAllocation":100,"rules":[],"defaultRule":[{"treatment":"current","size":100}],"creationTime":1583191487039,"lastUpdateTime":1583191487039}
+   2.807 [id=96]	INFO	hudson.model.Run#execute: test1 #1 main build action completed: SUCCESS
+Response: 
+{"objects":[{"name":"Default","id":"d2f02200-1515-11e9-a61f-0acdbc0eaddc"},{"name":"Mylo","id":"fe234b40-58cc-11ea-8c54-0ad87b86182f"},{"name":"myApp","id":"e1d00630-6152-11e9-8af6-0a1c02136776"}],"offset":0,"limit":10,"totalCount":3}
+Response: 
+{"name":"SplitPlugin_Jenkins_Test","environment":{"id":"029bd160-7e36-11e8-9a1c-0acd31e5aef0","name":"Production"},"trafficType":{"id":"e6910420-5c85-11e9-bbc9-12a5cc2af8fe","name":"user"},"killed":false,"treatments":[{"name":"premium","description":""},{"name":"standard","description":""},{"name":"current","description":""}],"defaultTreatment":"current","trafficAllocation":100,"rules":[],"defaultRule":[{"treatment":"current","size":100}],"creationTime":1583191487039,"lastUpdateTime":1583191487039}
+Response: 
+{"name":"SplitPlugin_Jenkins_Test","environment":{"id":"029bd160-7e36-11e8-9a1c-0acd31e5aef0","name":"Production"},"trafficType":{"id":"e6910420-5c85-11e9-bbc9-12a5cc2af8fe","name":"user"},"killed":false,"treatments":[{"name":"premium","description":""},{"name":"standard","description":""},{"name":"current","description":""}],"defaultTreatment":"current","trafficAllocation":100,"rules":[],"defaultRule":[{"treatment":"current","size":100}],"creationTime":1583191487039,"lastUpdateTime":1583191487039}
+Response: 
+{"name":"SplitPlugin_Jenkins_Test","environment":{"id":"029bd160-7e36-11e8-9a1c-0acd31e5aef0","name":"Production"},"trafficType":{"id":"e6910420-5c85-11e9-bbc9-12a5cc2af8fe","name":"user"},"killed":false,"treatments":[{"name":"premium","description":"","keys":["bob"]},{"name":"standard","description":""},{"name":"current","description":""}],"defaultTreatment":"current","trafficAllocation":100,"rules":[],"defaultRule":[{"treatment":"current","size":100}],"creationTime":1583191487039,"lastUpdateTime":1583191488670}
+   4.442 [id=99]	INFO	hudson.model.Run#execute: test2 #1 main build action completed: SUCCESS
+Response: 
+{"objects":[{"name":"Default","id":"d2f02200-1515-11e9-a61f-0acdbc0eaddc"},{"name":"Mylo","id":"fe234b40-58cc-11ea-8c54-0ad87b86182f"},{"name":"myApp","id":"e1d00630-6152-11e9-8af6-0a1c02136776"}],"offset":0,"limit":10,"totalCount":3}
+Response: 
+true
+   5.355 [id=102]	INFO	hudson.model.Run#execute: test3 #1 main build action completed: SUCCESS
+Response: 
+{"objects":[{"name":"Default","id":"d2f02200-1515-11e9-a61f-0acdbc0eaddc"},{"name":"Mylo","id":"fe234b40-58cc-11ea-8c54-0ad87b86182f"},{"name":"myApp","id":"e1d00630-6152-11e9-8af6-0a1c02136776"}],"offset":0,"limit":10,"totalCount":3}
+Response: 
+true
+   5.862 [id=81]	INFO	hudson.model.Run#execute: test4 #1 main build action completed: SUCCESS
+2020-03-02 15:24:50.351:INFO:oejs.AbstractConnector:Executing testSplitPlugin(io.jenkins.plugins.sample.SplitPluginBuilderTest): Stopped ServerConnector@715e1b21{HTTP/1.1,[http/1.1]}{localhost:0}
+2020-03-02 15:24:50.351:INFO:oejs.session:Executing testSplitPlugin(io.jenkins.plugins.sample.SplitPluginBuilderTest): Stopped scavenging
+2020-03-02 15:24:50.351:INFO:oejsh.ContextHandler:Executing testSplitPlugin(io.jenkins.plugins.sample.SplitPluginBuilderTest): Stopped o.e.j.w.WebAppContext@f680f10{/jenkins,file:///Users/bilalal-shahwany/Desktop/Projects/Java/SplitJenkins/split-plugin/target/jenkins-for-test/,UNAVAILABLE}{/Users/bilalal-shahwany/Desktop/Projects/Java/SplitJenkins/split-plugin/target/jenkins-for-test}
+   5.872 [id=67]	INFO	jenkins.model.Jenkins#cleanUp: Stopping Jenkins
+   5.901 [id=67]	INFO	jenkins.model.Jenkins#cleanUp: Jenkins stopped
