@@ -1,0 +1,34 @@
+- splitName: percentage_less_100_split
+  treatments:
+     - treatmentName: "on"
+       whitelistKeys: ["key1"]
+     - treatmentName: "off"
+     - treatmentName: "unallocated"
+  defaultRule:
+     - ruleTreatment: "on"
+       percentage: "80"
+     - ruleTreatment: "off"
+       percentage: "10"
+- splitName: no_rule_split
+  treatments:
+     - treatmentName: "on"
+     - treatmentName: "off"
+- splitName: one_treatment_split
+  treatments:
+     - treatmentName: "one"
+- splitName: correct_data_split
+  treatments:
+     - treatmentName: "on"
+       dynamicConfig: "this applies only to ON treatment"
+     - treatmentName: "off"
+       whitelistKeys: ["key1", "key2"]
+       dynamicConfig: "this applies only to OFF treatment"
+  defaultRule:
+     - ruleTreatment: "on"
+       percentage: "50"
+- splitName: no_treatment_split
+- splitName: diiff_treatment_names_split
+  treatments:
+     - treatmentName: "high"
+     - treatmentName: "low"
+     - treatmentName: "medium"

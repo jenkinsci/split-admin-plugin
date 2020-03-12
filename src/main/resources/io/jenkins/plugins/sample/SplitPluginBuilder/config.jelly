@@ -6,7 +6,9 @@
             	<f:option value="addToEnvironment" selected="${instance.splitTask.equals('addToEnvironment')? 'true':null}">Add Split To Environment</f:option>
             	<f:option value="addKeyToWhitelist" selected="${instance.splitTask.equals('addKeyToWhitelist')? 'true':null}">Add Key To Whitelist</f:option>
             	<f:option value="killSplit" selected="${instance.splitTask.equals('killSplit')? 'true':null}">Kill Split</f:option>               
+            	<f:option value="deleteSplitDefinition" selected="${instance.splitTask.equals('deleteSplitDefinition')? 'true':null}">Remove Split Definition</f:option>
             	<f:option value="deleteSplit" selected="${instance.splitTask.equals('deleteSplit')? 'true':null}">Delete Split</f:option>               
+            	<f:option value="createSplitFromYAML" selected="${instance.splitTask.equals('createSplitFromYAML')? 'true':null}">Create Split From YAML File</f:option>
         </select>
     </f:entry>
     <f:entry title="Workspace Name" field="workspaceName">
@@ -30,7 +32,7 @@
     <f:entry title="Whitelist Key" field="whitelistKey">
         <f:textbox />
     </f:entry>
-    <f:entry title="Segment Name" field="segmentName">
+    <f:entry title="YAML File Name" field="splitYAMLFile">
         <f:textbox />
     </f:entry>
 </j:jelly>

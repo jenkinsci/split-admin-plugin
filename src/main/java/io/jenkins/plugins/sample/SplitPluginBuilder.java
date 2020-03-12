@@ -31,10 +31,11 @@ public class SplitPluginBuilder extends Builder implements SimpleBuildStep {
     private final String splitDefinitions;
     private final String treatmentName;
     private final String whitelistKey;
+    private final String splitYAMLFile;
     private String apiKey;
 
     @DataBoundConstructor
-    public SplitPluginBuilder(String splitTask, String splitName, String environmentName, String workspaceName, String trafficTypeName, String splitDefinitions, String whitelistKey, String treatmentName) {
+    public SplitPluginBuilder(String splitTask, String splitName, String environmentName, String workspaceName, String trafficTypeName, String splitDefinitions, String whitelistKey, String treatmentName, String splitYAMLFile) {
         this.splitName = splitName;
         this.environmentName = environmentName;
         this.workspaceName = workspaceName;
@@ -43,6 +44,7 @@ public class SplitPluginBuilder extends Builder implements SimpleBuildStep {
         this.whitelistKey = whitelistKey;
         this.treatmentName = treatmentName;
         this.splitTask = splitTask;
+        this.splitYAMLFile = splitYAMLFile;
         this.apiKey = DescriptorImpl.splitAdminApiKey();
     }
 
@@ -50,6 +52,10 @@ public class SplitPluginBuilder extends Builder implements SimpleBuildStep {
         return trafficTypeName;
     }
 
+    public String getSplitYAMLFile() {
+        return splitYAMLFile;
+    }
+    
     public String getSplitDefinitions() {
         return splitDefinitions;
     }
@@ -77,7 +83,7 @@ public class SplitPluginBuilder extends Builder implements SimpleBuildStep {
     @Override
     public void perform(Run<?, ?> run, FilePath workspace, Launcher launcher, TaskListener listener) throws InterruptedException, IOException {
         listener.getLogger().println("Select Task: "+splitTask);
-        SplitAPI spAdmin = new SplitAPI(this.apiKey); // 9enig1pcv629481bjme33o4dn0kg26n7m6d9
+        SplitAPI spAdmin = new SplitAPI(this.apiKey);
         String workspaceId = spAdmin.GetWorkspaceId(workspaceName);
         listener.getLogger().println("WorkspaceId: "+workspaceId);
         Integer statusCode=0;
@@ -86,6 +92,12 @@ public class SplitPluginBuilder extends Builder implements SimpleBuildStep {
             listener.getLogger().println("Returned Status Code: "+statusCode.toString());
             CheckStatus(statusCode);
             listener.getLogger().println("Split ("+splitName+") is created!");
+        }
+        if (splitTask.equals("createSplitFromYAML")) {
+            statusCode=spAdmin.CreateSplitFromYAML(workspaceId, environmentName, trafficTypeName, splitYAMLFile);
+            listener.getLogger().println("Returned Status Code: "+statusCode.toString());
+            CheckStatus(statusCode);
+            listener.getLogger().println("Splits created successfuly from ("+splitYAMLFile+")!");
         }
         if (splitTask.equals("addToEnvironment")) {
             statusCode=spAdmin.AddSplitToEnvironment(workspaceId, environmentName, splitName,  splitDefinitions);
@@ -110,6 +122,12 @@ public class SplitPluginBuilder extends Builder implements SimpleBuildStep {
             listener.getLogger().println("Returned Status Code: "+statusCode.toString());
             CheckStatus(statusCode);
             listener.getLogger().println("Split ("+splitName+") is deleted!");
+        }
+        if (splitTask.equals("deleteSplitDefinition")) {
+            statusCode=spAdmin.DeleteSplitDefinition(workspaceId, environmentName, splitName);
+            listener.getLogger().println("Returned Status Code: "+statusCode.toString());
+            CheckStatus(statusCode);
+            listener.getLogger().println("Split ("+splitName+") definition is deleted!");
         }
     }
     

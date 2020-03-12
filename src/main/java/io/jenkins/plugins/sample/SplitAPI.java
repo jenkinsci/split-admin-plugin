@@ -13,39 +13,104 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONArray; 
 import org.json.simple.JSONObject; 
 import org.json.simple.parser.JSONParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import java.io.File;
+import java.util.Map;
+
+import io.jenkins.plugins.sample.DefaultRule;
+import io.jenkins.plugins.sample.Split;
+import io.jenkins.plugins.sample.Treatments;
 
 
 public class SplitAPI {
 	
-	Logger myLogger = LoggerFactory.getLogger(SplitAPI.class);
+    static Logger myLogger = Logger.getLogger(SplitAPI.class.getName());
 	String apiKey="";
 	
 	SplitAPI(String adminApiKey) {
 		this.apiKey=adminApiKey;
 	}
+    
+    public int ExecHTTPRequest(String httpRequest, String URL, String body) {
+        int retryLimit = 10;
+        int retries = 0;
+        int sleepInterval = 5000;
+        int statusCode = 0;
+        while (retries<retryLimit) {
+            retries+=1;
+            statusCode = 500;
+            try {
+                myLogger.info("Executing "+httpRequest);
+                myLogger.debug("URL="+URL);
+                myLogger.debug("Body="+body);
+                switch(httpRequest) {
+                    case "DeleteHTTP":
+                        statusCode = this.DeleteHTTP(URL);
+                        break;
+                    case "PostHTTP":
+                        statusCode = this.PostHTTP(URL, body);
+                        break;
+                    case "PatchHTTP":
+                        statusCode = this.PatchHTTP(URL, body);
+                        break;
+                    case "PutHTTP":
+                        statusCode = this.PutHTTP(URL, body);
+                        break;
+                    default:
+                        statusCode = 500;
+                }
+                myLogger.info("Status Code returned="+Integer.toString(statusCode));
+                if (statusCode==429) {  // Rate Limit Reached
+                    myLogger.warn("Rate Limit Detected, waiting for few seconds..");
+                    Thread.sleep(sleepInterval);
+                    continue;
+                }
+                break;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return statusCode;
+    }
 	
 	public String GetHTTP(String URL) throws ClientProtocolException, IOException, Exception {
-		CloseableHttpClient httpclient = HttpClients.createDefault();
-		try {
-	    	HttpGet httpGet = new HttpGet(URL);
-            httpGet.setHeader("Content-type", "application/json");
-            httpGet.setHeader("Authorization", "Bearer "+this.apiKey);
-	    	CloseableHttpResponse  response = httpclient.execute(httpGet);
-	    	HttpEntity entity = response.getEntity();
-            String mresp =  EntityUtils.toString(entity);
-            System.out.println("Response: ");            
-            System.out.println(mresp);
-            int statusCode = response.getStatusLine().getStatusCode();
-            if (statusCode!=200 && statusCode!=302 && statusCode!=202) {
-                throw new Exception(mresp);
+        int retryLimit = 10;
+        int retries = 0;
+        int sleepInterval = 5000;
+        String mresp="";
+        CloseableHttpClient httpclient = null;
+        try {
+            while (retries<retryLimit) {
+                httpclient = HttpClients.createDefault();
+                int statusCode = 500;
+                myLogger.debug("GetHTTP:URL: "+URL);
+                HttpGet httpGet = new HttpGet(URL);
+                httpGet.setHeader("Content-type", "application/json");
+                httpGet.setHeader("Authorization", "Bearer "+this.apiKey);
+                CloseableHttpResponse  response = httpclient.execute(httpGet);
+                HttpEntity entity = response.getEntity();
+                mresp =  EntityUtils.toString(entity);
+                myLogger.debug("Response: ");
+                myLogger.debug(mresp);
+                statusCode = response.getStatusLine().getStatusCode();
+                if (statusCode!=200 && statusCode!=302 && statusCode!=202 && statusCode!=429) {
+                    throw new Exception(mresp);
+                }
+                retries+=1;
+                if (statusCode==429) {  // Rate Limit Reached
+                    myLogger.warn("Rate Limit Detected, waiting for few seconds..");
+                    Thread.sleep(sleepInterval);
+                    continue;
+                }
+                break;
             }
             return mresp;
-		} catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
 
         } finally {
@@ -64,8 +129,8 @@ public class SplitAPI {
 	    	CloseableHttpResponse  response = httpclient.execute(httpPost);
 	    	HttpEntity entity = response.getEntity();
             String mresp =  EntityUtils.toString(entity);
-            System.out.println("Response: ");            
-            System.out.println(mresp);
+            myLogger.debug("Response: ");
+            myLogger.debug(mresp);
 	    	int statusCode = response.getStatusLine().getStatusCode();
             return statusCode;
 		} catch (Exception e) {
@@ -87,8 +152,8 @@ public class SplitAPI {
             CloseableHttpResponse  response = httpclient.execute(httpPatch);
             HttpEntity entity = response.getEntity();
             String mresp =  EntityUtils.toString(entity);
-            System.out.println("Response: ");
-            System.out.println(mresp);
+            myLogger.debug("Response: ");
+            myLogger.debug(mresp);
             int statusCode = response.getStatusLine().getStatusCode();
             return statusCode;
         } catch (Exception e) {
@@ -111,8 +176,8 @@ public class SplitAPI {
             CloseableHttpResponse  response = httpclient.execute(httpPut);
             HttpEntity entity = response.getEntity();
             String mresp =  EntityUtils.toString(entity);
-            System.out.println("Response: ");
-            System.out.println(mresp);
+            myLogger.debug("Response: ");
+            myLogger.debug(mresp);
             int statusCode = response.getStatusLine().getStatusCode();
             return statusCode;
         } catch (Exception e) {
@@ -133,8 +198,8 @@ public class SplitAPI {
             CloseableHttpResponse  response = httpclient.execute(httpDelete);
             HttpEntity entity = response.getEntity();
             String mresp =  EntityUtils.toString(entity);
-            System.out.println("Response: ");
-            System.out.println(mresp);
+            myLogger.debug("Response: ");
+            myLogger.debug(mresp);
             int statusCode = response.getStatusLine().getStatusCode();
             return statusCode;
         } catch (Exception e) {
@@ -146,7 +211,6 @@ public class SplitAPI {
         return 500;
     }
 
-		
     public String GetWorkspaceId(String workspaceName) {
         try {
             String resp = this.GetHTTP("https://api.split.io/internal/api/v2/workspaces");
@@ -173,7 +237,7 @@ public class SplitAPI {
         try {
             String URL = "https://api.split.io/internal/api/v2/splits/ws/"+workspaceId+"/trafficTypes/"+trafficTypeName;
             String data="{\"name\":\""+splitName+"\", \"description\": \""+description+"\"}";
-            return this.PostHTTP(URL, data);
+            return this.ExecHTTPRequest("PostHTTP", URL, data);
         } catch (Exception e) {
         	e.printStackTrace();
         }
@@ -183,7 +247,7 @@ public class SplitAPI {
     public int AddSplitToEnvironment(String workspaceId, String environmentName, String splitName, String definition) {
         try {
             String URL = "https://api.split.io/internal/api/v2/splits/ws/"+workspaceId+"/"+splitName+"/environments/"+environmentName;
-            return this.PostHTTP(URL, definition);
+            return this.ExecHTTPRequest("PostHTTP", URL, definition);
         } catch (Exception e) {
         	e.printStackTrace();
         }
@@ -193,7 +257,7 @@ public class SplitAPI {
     public int KillSplit(String workspaceId, String environmentName, String splitName) {
         try {
             String URL = "https://api.split.io/internal/api/v2/splits/ws/"+workspaceId+"/"+splitName+"/environments/"+environmentName+"/kill";
-            return this.PutHTTP(URL, "{ \"comment\": \"Killed By Jenkins Split Admin API\"}");
+            return this.ExecHTTPRequest("PutHTTP", URL, "{ \"comment\": \"Killed By Jenkins Split Admin API\"}");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -203,7 +267,7 @@ public class SplitAPI {
     public int DeleteSplit(String workspaceId, String splitName) {
         try {
             String URL = "https://api.split.io/internal/api/v2/splits/ws/"+workspaceId+"/"+splitName;
-            return this.DeleteHTTP(URL);
+            return this.ExecHTTPRequest("DeleteHTTP", URL, null);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -220,7 +284,7 @@ public class SplitAPI {
             else
                 patchData="[{\"op\": \"add\", \"path\": \"/treatments/"+treatmentOrder.toString()+"/keys\", \"value\": [\""+whitelistKey+"\"]}]";
             String URL = "https://api.split.io/internal/api/v2/splits/ws/"+workspaceId+"/"+splitName+"/environments/"+environmentName;
-            return this.PatchHTTP(URL, patchData);
+            return this.ExecHTTPRequest("PatchHTTP", URL, patchData);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -279,4 +343,228 @@ public class SplitAPI {
         }
         return "";
     }
+    
+    public int CreateSplitFromYAML(String workspaceId, String environmentName, String trafficTypeName, String YAMLFile) {
+        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+        try {
+            Split[] split = mapper.readValue(new File(YAMLFile), Split[].class);
+            for (Integer i=0; i<split.length; i++) {
+                String splitName = split[i].getSplitName();
+                myLogger.info("Working on Split name ("+splitName+")");
+                if (splitName==null) {
+                    throw new Exception("\nSplit Name not found in YAML file in iteration "+i.toString());
+                }
+                if (!this.CheckSplitExists(workspaceId, splitName)) {
+                    this.CheckStatus(this.CreateSplit(workspaceId, trafficTypeName, splitName, "Created form Jenkins plugin"));
+                }
+                else myLogger.info("Split name ("+splitName+") already exists in workspace! Skipping.");
+                
+                if (!this.CheckSplitDefinitionExists(workspaceId, environmentName, splitName)) {
+                    String splitDefinitions = ConstructSplitDefinitions(split[i]);
+                    myLogger.debug("Split Definitions: "+splitDefinitions);
+                    this.CheckStatus(this.AddSplitToEnvironment(workspaceId, environmentName, splitName, splitDefinitions));
+                } else myLogger.info("Split definitions for ("+splitName+") already exists in environment! Skipping.");
+            }
+            return 200;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 500;
+    }
+
+    private String ConstructSplitDefinitions(Split split) throws Exception {
+        StringBuilder JSONStructure = new StringBuilder( "" );
+        if (split.getTreatments()==null) {
+// Return on/off treatments with default rule set to off
+            return "{\"treatments\":[{\"name\": \"on\", \"description\": \"\"}, {\"name\": \"off\", \"description\": \"\"}],\"defaultTreatment\":\"off\",\"rules\":[],\"defaultRule\":[{\"treatment\": \"off\", \"size\": 100}]}";
+        }
+// Adding Treatments
+        JSONStructure.append(this.AddTreatmentsFromYAML(split));
+    JSONStructure.append(",\"defaultTreatment\":\""+split.getTreatments()[0].getTreatmentName()+"\"");
+// Add default Rule
+        JSONStructure.append(this.AddDefaultRuleFromYAML(split));
+        JSONStructure.append("}");
+        return JSONStructure.toString();
+    }
+    
+    private String AddTreatmentsFromYAML(Split split) {
+        StringBuilder JSONStructure = new StringBuilder( "" );
+        try {
+            Treatments[] treatments = split.getTreatments();
+            int treatmentsCount=0;
+            JSONStructure.append("{\"treatments\":[");
+            for (int j=0; j<treatments.length; j++) {
+                String treatmentName = treatments[j].getTreatmentName();
+                if (treatmentName==null) {
+                    throw new Exception("\nTreatment Name not found in YAML file for Split ("+split.getSplitName()+")");
+                }
+                if (treatmentsCount!=0) JSONStructure.append(",");
+                JSONStructure.append("{\"name\":\""+treatmentName+"\", \"description\": \"\"");
+                String dynamicConfig = treatments[j].getDynamicConfig();
+                if (dynamicConfig!=null) {
+                    JSONStructure.append(",\"configurations\":\""+dynamicConfig+"\"");
+                }
+                String keys[] = treatments[j].getWhitelistKeys();
+                if (keys!=null) {
+                    JSONStructure.append(",\"keys\":[");
+                    boolean firstFlag=true;
+                    for (int k=0; k<keys.length; k++) {
+                        if (!firstFlag) JSONStructure.append(",");
+                        JSONStructure.append("\""+keys[k]+"\"");
+                        firstFlag=false;
+                    }
+                    JSONStructure.append("]");
+                }
+                treatmentsCount++;
+                JSONStructure.append("}");
+            }
+            if (treatmentsCount==1) {
+    // Add a second treatment
+                JSONStructure.append(",{\"name\": \"SecondTreatment\", \"description\": \"\"}");
+            }
+            JSONStructure.append("]");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return JSONStructure.toString();
+    }
+        
+    private String AddDefaultRuleFromYAML(Split split) {
+        StringBuilder JSONStructure = new StringBuilder( "" );
+        try {
+            DefaultRule[] defaultRule = split.getDefaultRule();
+            if (defaultRule==null) {
+    // return with default rule set to off if off treatment exist
+                boolean offFlag=false;
+                for (int i=0; i<split.getTreatments().length; i++) {
+                    if (split.getTreatments()[i].getTreatmentName().equals("off")) offFlag=true;
+                }
+                if (offFlag) {
+                    JSONStructure.append(",\"defaultRule\":[{\"treatment\": \"off\", \"size\": 100}]");
+                } else {
+                    JSONStructure.append(",\"defaultRule\":[{\"treatment\": \""+split.getTreatments()[0].getTreatmentName()+"\", \"size\": 100}]");
+                }
+            } else {
+                JSONStructure.append(",\"defaultRule\":[");
+                int treatmentCount=0;
+                int totPercentage=0;
+                for (int j=0; j<defaultRule.length; j++) {
+                    String treatmentName = defaultRule[j].getRuleTreatment();
+                    if (treatmentName==null) {
+                        throw new Exception("\nRule Treatment Name not found in YAML file for Split ("+split.getSplitName()+")");
+                    }
+                    Integer percentage = defaultRule[j].getPercentage();
+                    if (percentage==null) {
+                        throw new Exception("\nPercentage value not found in YAML file for Split ("+split.getSplitName()+")");
+                    }
+                    if (j!=0) JSONStructure.append(",");
+                    JSONStructure.append("{\"treatment\":\""+treatmentName+"\", \"size\":"+percentage.toString()+"}");
+                    totPercentage+=percentage;
+                    treatmentCount++;
+                }
+                if (totPercentage<100) {
+                    if (totPercentage<100 && treatmentCount==split.getTreatments().length) {
+                        throw new Exception("\nTotal Default Rule Percentages are less than 100 for Split ("+split.getSplitName()+")");
+                    }
+                    String findTreatmentNotUsedInRule="";
+                    for (int i=0; i<split.getTreatments().length; i++) {
+                        boolean treatmentFound=false;
+                        for (int j=0; j<split.getDefaultRule().length; j++) {
+                            if (split.getTreatments()[i].getTreatmentName().equals(defaultRule[j].getRuleTreatment())) {
+                                treatmentFound=true;
+                            }
+                        }
+                        if (!treatmentFound) {
+                            findTreatmentNotUsedInRule=split.getTreatments()[i].getTreatmentName();
+                            break;
+                        }
+                    }
+                    Integer remainingPercentage=100-totPercentage;
+                    JSONStructure.append(", {\"treatment\": \""+findTreatmentNotUsedInRule+"\", \"size\": "+remainingPercentage.toString()+"}");
+                }
+                JSONStructure.append("]");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return JSONStructure.toString();
+    }
+    
+    public String GetSplitsList(String workspaceId) {
+        try {
+            return this.GetHTTP("https://api.split.io/internal/api/v2/splits/ws/"+workspaceId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    public String GetSplitsInEnvironmentList(String workspaceId, String environmentName) {
+        try {
+            return this.GetHTTP("https://api.split.io/internal/api/v2/splits/ws/"+workspaceId+"/environments/"+environmentName);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    private boolean CheckSplitExists(String workspaceId, String splitName) {
+        try {
+            String resp= this.GetSplitsList(workspaceId);
+            JSONParser parser = new JSONParser();
+            Object obj = parser.parse(resp);
+            JSONObject js = (JSONObject) obj;
+            JSONArray jsArray = (JSONArray)js.get("objects");
+            String wsId="";
+            for (int ws=0; ws < jsArray.size(); ws++) {
+                JSONObject jsItem = (JSONObject) jsArray.get(ws);
+                String temp = jsItem.get("name").toString();
+                if  (temp.equals(splitName)) {
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    private boolean CheckSplitDefinitionExists(String workspaceId, String environmentName, String splitName) {
+        try {
+            String resp= this.GetSplitsInEnvironmentList(workspaceId, environmentName);
+            JSONParser parser = new JSONParser();
+            Object obj = parser.parse(resp);
+            JSONObject js = (JSONObject) obj;
+            JSONArray jsArray = (JSONArray)js.get("objects");
+            String wsId="";
+            for (int ws=0; ws < jsArray.size(); ws++) {
+                JSONObject jsItem = (JSONObject) jsArray.get(ws);
+                String temp = jsItem.get("name").toString();
+                if  (temp.equals(splitName)) {
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    private void CheckStatus(int statusCode) {
+        if (statusCode!=200 && statusCode!=302 && statusCode!=202) {
+            throw new AssertionError("Admin API Call Failed");
+        }
+    }
+
+    public int DeleteSplitDefinition(String workspaceId, String environmentName, String splitName) {
+        try {
+            String URL = "https://api.split.io/internal/api/v2/splits/ws/"+workspaceId+"/"+splitName+"/environments/"+environmentName;
+            return this.ExecHTTPRequest("DeleteHTTP", URL, null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 500;
+    }
+    
 }
