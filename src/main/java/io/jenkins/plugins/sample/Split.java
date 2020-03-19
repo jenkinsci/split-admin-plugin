@@ -1,33 +1,45 @@
 package io.jenkins.plugins.sample;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Split {
-    public String splitName;
-    public Treatments[] treatments;
-    public DefaultRule[] defaultRule;
-	 
-	    // Constructors, Getters, Setters and toString	
-    public String getSplitName() {
-    	return this.splitName;
-    }
-    
-    public void setSplitName(String splitName) {
-    	this.splitName = splitName;
+    private Treatments[] treatments;
+    private String splitName;
+
+    public Split() {
+        this.treatments = null;
+        this.splitName = null;
     }
 
     public Treatments[] getTreatments() {
-        return treatments;
+        return this.treatments == null ? null : (Treatments[]) this.treatments.clone();
     }
+    
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(
+    value="EI_EXPOSE_REP2",
+    justification="I know what I'm doing")
     public void setTreatments(Treatments[] treatments) {
-        this.treatments = treatments;
+    	this.treatments = treatments;
     }
-    
-    public DefaultRule[] getDefaultRule() {
-    	return this.defaultRule;
+
+    public void addTreatment(Treatments newTreatment) {
+    	List<Treatments> tempTreatments = new ArrayList<Treatments>();
+    	if (this.treatments!=null) {
+        	for (Treatments t : this.treatments) { 
+        		tempTreatments.add(t); 
+            }    		
+    	}
+    	tempTreatments.add(newTreatment);
+    	this.treatments = tempTreatments.toArray(new Treatments[0]);
     }
-    
-    public void setDefaultRule(DefaultRule[] defaultRule) {
-    	this.defaultRule = defaultRule;
+
+    public String getSplitName() {
+    	return this.splitName;
     }
-    
+
+    public void setSplitName(String splitName) {
+    	this.splitName = splitName;
+    }
 
 }

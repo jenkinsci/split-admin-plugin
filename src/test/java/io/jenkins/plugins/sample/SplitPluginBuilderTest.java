@@ -15,7 +15,7 @@ public class SplitPluginBuilderTest {
     @Rule
     public JenkinsRule jenkins = new JenkinsRule();
 
-    final String splitAdminApi = "ADMIN API KEY";
+    final String splitAdminApi = "ADMIN API Key";
     final String splitName = "SplitPlugin_Jenkins_Test";
     final String workspaceName = "Default";
     final String environmentName = "Production";

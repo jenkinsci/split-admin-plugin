@@ -82,6 +82,7 @@ public class SplitPluginBuilder extends Builder implements SimpleBuildStep {
     
     @Override
     public void perform(Run<?, ?> run, FilePath workspace, Launcher launcher, TaskListener listener) throws InterruptedException, IOException {
+        String splitYAMLFileFullPath = workspace.getRemote()+"/"+splitYAMLFile;
         listener.getLogger().println("Select Task: "+splitTask);
         SplitAPI spAdmin = new SplitAPI(this.apiKey);
         String workspaceId = spAdmin.GetWorkspaceId(workspaceName);
@@ -94,7 +95,7 @@ public class SplitPluginBuilder extends Builder implements SimpleBuildStep {
             listener.getLogger().println("Split ("+splitName+") is created!");
         }
         if (splitTask.equals("createSplitFromYAML")) {
-            statusCode=spAdmin.CreateSplitFromYAML(workspaceId, environmentName, trafficTypeName, splitYAMLFile);
+            statusCode=spAdmin.CreateSplitFromYAML(workspaceId, environmentName, trafficTypeName, splitYAMLFileFullPath);
             listener.getLogger().println("Returned Status Code: "+statusCode.toString());
             CheckStatus(statusCode);
             listener.getLogger().println("Splits created successfuly from ("+splitYAMLFile+")!");
