@@ -1,5 +1,5 @@
 # jenkins-split-plugin
-Jenkins plugin that use Split Admin REST API to allow creating and updating and deleting Splits as part of Test automation and build workflow.
+Jenkins plugin that use Split Admin REST API to allow creating, updating and deleting Splits as part of Test automation and build workflow.
 Reference to Split Admin API can be found here: https://docs.split.io/reference
 
 Installations:
