@@ -3,6 +3,12 @@ package io.jenkins.plugins.sample;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+* Class provide split structure when importing data from YAML file
+*
+* @author Bilal Al-Shshany
+*
+*/
 public class Split {
     private Treatments[] treatments;
     private String splitName;
@@ -17,8 +23,8 @@ public class Split {
     }
     
     @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(
-    value="EI_EXPOSE_REP2",
-    justification="I know what I'm doing")
+    value = "EI_EXPOSE_REP2",
+    justification = "I know what I'm doing")
     public void setTreatments(Treatments[] treatments) {
     	this.treatments = treatments;
     }

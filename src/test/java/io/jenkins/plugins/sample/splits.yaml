@@ -1,6 +1,6 @@
 - percentage_less_100_split:
     treatment: "on"
-    whitelistKeys: ["key1"]
+    keys: ["key1"]
     percentage: "80"
 - percentage_less_100_split:
     treatment: "off"

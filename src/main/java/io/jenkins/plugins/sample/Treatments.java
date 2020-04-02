@@ -1,5 +1,11 @@
 package io.jenkins.plugins.sample;
 
+/**
+* Class provide treatment structure when importing data from YAML file
+*
+* @author Bilal Al-Shshany
+*
+*/
 public class Treatments {
     private String treatment;
     private String[] keys;
@@ -13,7 +19,6 @@ public class Treatments {
         this.percentage = 0;
     }
 
-    
     public String getTreatment() {
     	return this.treatment;
     }
@@ -35,8 +40,8 @@ public class Treatments {
     }
     
     @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(
-    value="EI_EXPOSE_REP2",
-    justification="I know what I'm doing")
+    value = "EI_EXPOSE_REP2",
+    justification = "I know what I'm doing")
     public void setKeys(String[] keys) {
         this.keys = keys;
     }
