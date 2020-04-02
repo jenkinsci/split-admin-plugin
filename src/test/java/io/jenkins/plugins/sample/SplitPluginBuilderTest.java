@@ -10,12 +10,18 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 
+/**
+* Unit Test class
+*
+* @author Bilal Al-Shshany
+*
+*/
 public class SplitPluginBuilderTest {
 
     @Rule
     public JenkinsRule jenkins = new JenkinsRule();
 
-    final String splitAdminApi = "ADMIN API Key";
+    final String splitAdminApi = "ADMIN API KEY";
     final String splitName = "SplitPlugin_Jenkins_Test";
     final String workspaceName = "Default";
     final String environmentName = "Production";
@@ -101,6 +107,6 @@ public class SplitPluginBuilderTest {
         builder.setApiKey(splitAdminApi);
         project.getBuildersList().add(builder);
         FreeStyleBuild build = jenkins.buildAndAssertSuccess(project);
-        jenkins.assertLogContains("Splits created successfuly from ("+splitYAMLFile+")", build);
+        jenkins.assertLogContains("Splits created successfuly from (", build);
     }
 }

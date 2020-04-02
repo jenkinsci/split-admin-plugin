@@ -13,7 +13,6 @@ import hudson.tasks.BuildStepDescriptor;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
-
 import javax.servlet.ServletException;
 import java.io.IOException;
 import jenkins.tasks.SimpleBuildStep;
@@ -21,6 +20,12 @@ import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundSetter;
 import net.sf.json.JSONObject;
 
+/**
+* Class implementing Jenkins plugin builder and descriptor
+*
+* @author Bilal Al-Shshany
+*
+*/
 public class SplitPluginBuilder extends Builder implements SimpleBuildStep {
 
     private final String splitTask;
@@ -45,7 +50,7 @@ public class SplitPluginBuilder extends Builder implements SimpleBuildStep {
         this.treatmentName = treatmentName;
         this.splitTask = splitTask;
         this.splitYAMLFile = splitYAMLFile;
-        this.apiKey = DescriptorImpl.splitAdminApiKey();
+        this.apiKey = DescriptorImpl.getSplitAdminApiKey();
     }
 
     public String getTrafficTypeName() {
@@ -82,66 +87,55 @@ public class SplitPluginBuilder extends Builder implements SimpleBuildStep {
     
     @Override
     public void perform(Run<?, ?> run, FilePath workspace, Launcher launcher, TaskListener listener) throws InterruptedException, IOException {
-        String splitYAMLFileFullPath = workspace.getRemote()+"/"+splitYAMLFile;
+        String splitYAMLFileFullPath = "";
+        splitYAMLFileFullPath = workspace.getRemote() + "/" + splitYAMLFile;
         listener.getLogger().println("Select Task: "+splitTask);
+        if (this.apiKey.equals("")) this.apiKey = DescriptorImpl.getSplitAdminApiKey();
         SplitAPI spAdmin = new SplitAPI(this.apiKey);
         String workspaceId = spAdmin.GetWorkspaceId(workspaceName);
-        listener.getLogger().println("WorkspaceId: "+workspaceId);
-        Integer statusCode=0;
+        listener.getLogger().println("WorkspaceId: " + workspaceId);
+        Integer statusCode = 0;
         if (splitTask.equals("createSplit")) {
             statusCode=spAdmin.CreateSplit(workspaceId, trafficTypeName, splitName, "Created From Jenkins Split Admin API");
-            listener.getLogger().println("Returned Status Code: "+statusCode.toString());
-            CheckStatus(statusCode);
-            listener.getLogger().println("Split ("+splitName+") is created!");
+            listener.getLogger().println("Returned Status Code: " + statusCode.toString());
+            listener.getLogger().println("Split (" + splitName + ") is created!");
         }
         if (splitTask.equals("createSplitFromYAML")) {
             statusCode=spAdmin.CreateSplitFromYAML(workspaceId, environmentName, trafficTypeName, splitYAMLFileFullPath);
-            listener.getLogger().println("Returned Status Code: "+statusCode.toString());
-            CheckStatus(statusCode);
-            listener.getLogger().println("Splits created successfuly from ("+splitYAMLFile+")!");
+            listener.getLogger().println("Returned Status Code: " + statusCode.toString());
+            listener.getLogger().println("Splits created successfuly from (" + splitYAMLFileFullPath + ")!");
         }
         if (splitTask.equals("addToEnvironment")) {
             statusCode=spAdmin.AddSplitToEnvironment(workspaceId, environmentName, splitName,  splitDefinitions);
-            listener.getLogger().println("Returned Status Code: "+statusCode.toString());
-            CheckStatus(statusCode);
-            listener.getLogger().println("Split ("+splitName+") is added to ("+environmentName+") Environment!");
+            listener.getLogger().println("Returned Status Code: " + statusCode.toString());
+            listener.getLogger().println("Split (" + splitName + ") is added to (" + environmentName + ") Environment!");
         }
         if (splitTask.equals("killSplit")) {
             statusCode=spAdmin.KillSplit(workspaceId, environmentName, splitName);
-            listener.getLogger().println("Returned Status Code: "+statusCode.toString());
-            CheckStatus(statusCode);
-            listener.getLogger().println("Split ("+splitName+") is killed!");
+            listener.getLogger().println("Returned Status Code: " + statusCode.toString());
+            listener.getLogger().println("Split (" + splitName + ") is killed!");
         }
         if (splitTask.equals("addToWhitelist")) {
             statusCode=spAdmin.AddWhiteListToSplit(workspaceId, environmentName, splitName,  treatmentName, whitelistKey);
-            listener.getLogger().println("Returned Status Code: "+statusCode.toString());
-            CheckStatus(statusCode);
-            listener.getLogger().println("Key  ("+whitelistKey+") is added to ("+treatmentName+") Whitelist in Split ("+splitName+")");
+            listener.getLogger().println("Returned Status Code: " + statusCode.toString());
+            listener.getLogger().println("Key  (" + whitelistKey + ") is added to ("+treatmentName+") Whitelist in Split ("+splitName+")");
         }
         if (splitTask.equals("deleteSplit")) {
             statusCode=spAdmin.DeleteSplit(workspaceId, splitName);
-            listener.getLogger().println("Returned Status Code: "+statusCode.toString());
-            CheckStatus(statusCode);
-            listener.getLogger().println("Split ("+splitName+") is deleted!");
+            listener.getLogger().println("Returned Status Code: " + statusCode.toString());
+            listener.getLogger().println("Split (" + splitName + ") is deleted!");
         }
         if (splitTask.equals("deleteSplitDefinition")) {
             statusCode=spAdmin.DeleteSplitDefinition(workspaceId, environmentName, splitName);
-            listener.getLogger().println("Returned Status Code: "+statusCode.toString());
-            CheckStatus(statusCode);
-            listener.getLogger().println("Split ("+splitName+") definition is deleted!");
+            listener.getLogger().println("Returned Status Code: " + statusCode.toString());
+            listener.getLogger().println("Split (" + splitName + ") definition is deleted!");
         }
     }
     
-    private void CheckStatus(int statusCode) {
-        if (statusCode!=200 && statusCode!=302 && statusCode!=202) {
-            throw new AssertionError("Admin API Call Failed");
-        }
-    }
-
     @Symbol("greet")
     @Extension
     public static final class DescriptorImpl extends BuildStepDescriptor<Builder> {
-        static String splitAdminApiKey="";
+        static String splitAdminApiKey = "";
         public FormValidation doCheckWorkspaceName(@QueryParameter String workspaceName)
                 throws IOException, ServletException {
             if (workspaceName.length() == 0)
@@ -162,36 +156,8 @@ public class SplitPluginBuilder extends Builder implements SimpleBuildStep {
                 return FormValidation.error("Please Set the Split Name");
             return FormValidation.ok();
         }
-/*
-        public FormValidation doCheckTrafficTypeName(@QueryParameter String trafficTypeName, @QueryParameter String splitTask)
-                throws IOException, ServletException {
-            if (splitTask.equals("createSplit") && trafficTypeName.length() == 0)
-                return FormValidation.error("Please Set the TrafficType Name");
-            return FormValidation.ok();
-        }
 
-        public FormValidation doCheckSplitDefinitions(@QueryParameter String splitDefinitions, @QueryParameter String splitTask)
-                throws IOException, ServletException {
-            if (splitTask.equals("addToEnvironment") && splitDefinitions.length() == 0)
-                return FormValidation.error("Please Set the Split Definitions");
-            return FormValidation.ok();
-        }
-
-        public FormValidation doCheckTreatmentName(@QueryParameter String treatmentName, @QueryParameter String splitTask)
-                throws IOException, ServletException {
-            if (splitTask.equals("addKeyToWhitelist") && treatmentName.length() == 0)
-                return FormValidation.error("Please Set the Treatment Name");
-            return FormValidation.ok();
-        }
-
-        public FormValidation doCheckWhitelistKey(@QueryParameter String whitelistKey, @QueryParameter String splitTask)
-                throws IOException, ServletException {
-            if (splitTask.equals("addKeyToWhitelist") && whitelistKey.length() == 0)
-                return FormValidation.error("Please Set the Whitelist Key");
-            return FormValidation.ok();
-        }
-*/
-        public static String splitAdminApiKey() {
+        public static String getSplitAdminApiKey() {
             return splitAdminApiKey;
         }
         
