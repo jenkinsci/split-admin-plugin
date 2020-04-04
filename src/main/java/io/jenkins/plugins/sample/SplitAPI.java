@@ -32,6 +32,12 @@ import org.yaml.snakeyaml.Yaml;
 import io.jenkins.plugins.sample.Split;
 import io.jenkins.plugins.sample.Treatments;
 
+/**
+* Class for http response structure
+*
+* @author Bilal Al-Shshany
+*
+*/
 class HTTPResponse
 {
     public int statusCode; 
@@ -43,6 +49,12 @@ class HTTPResponse
     }
 }
 
+/**
+* Class wrapper for Split Admin API
+*
+* @author Bilal Al-Shshany
+*
+*/
 public class SplitAPI {
 	
     private static Logger LOGGER = Logger.getLogger(SplitAPI.class.getName());
