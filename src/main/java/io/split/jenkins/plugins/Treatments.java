@@ -1,4 +1,4 @@
-package io.jenkins.plugins.sample;
+package io.split.jenkins.plugins;
 
 /**
 * Class provide treatment structure when importing data from YAML file

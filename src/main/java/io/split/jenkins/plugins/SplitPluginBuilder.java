@@ -1,6 +1,5 @@
-package io.jenkins.plugins.sample;
+package io.split.jenkins.plugins;
 
-import io.jenkins.plugins.sample.SplitAPI;
 import hudson.Launcher;
 import hudson.Extension;
 import hudson.FilePath;
@@ -17,7 +16,6 @@ import javax.servlet.ServletException;
 import java.io.IOException;
 import jenkins.tasks.SimpleBuildStep;
 import org.jenkinsci.Symbol;
-import org.kohsuke.stapler.DataBoundSetter;
 import net.sf.json.JSONObject;
 
 /**
@@ -89,44 +87,44 @@ public class SplitPluginBuilder extends Builder implements SimpleBuildStep {
     public void perform(Run<?, ?> run, FilePath workspace, Launcher launcher, TaskListener listener) throws InterruptedException, IOException {
         String splitYAMLFileFullPath = "";
         splitYAMLFileFullPath = workspace.getRemote() + "/" + splitYAMLFile;
-        listener.getLogger().println("Select Task: "+splitTask);
+        listener.getLogger().println("Select Task: " + splitTask);
         if (this.apiKey.equals("")) this.apiKey = DescriptorImpl.getSplitAdminApiKey();
         SplitAPI spAdmin = new SplitAPI(this.apiKey);
-        String workspaceId = spAdmin.GetWorkspaceId(workspaceName);
+        String workspaceId = spAdmin.getWorkspaceId(workspaceName);
         listener.getLogger().println("WorkspaceId: " + workspaceId);
         Integer statusCode = 0;
         if (splitTask.equals("createSplit")) {
-            statusCode=spAdmin.CreateSplit(workspaceId, trafficTypeName, splitName, "Created From Jenkins Split Admin API");
+            statusCode=spAdmin.createSplit(workspaceId, trafficTypeName, splitName, "Created From Jenkins Split Admin API");
             listener.getLogger().println("Returned Status Code: " + statusCode.toString());
             listener.getLogger().println("Split (" + splitName + ") is created!");
         }
         if (splitTask.equals("createSplitFromYAML")) {
-            statusCode=spAdmin.CreateSplitFromYAML(workspaceId, environmentName, trafficTypeName, splitYAMLFileFullPath);
+            statusCode=spAdmin.createSplitFromYAML(workspaceId, environmentName, trafficTypeName, splitYAMLFileFullPath);
             listener.getLogger().println("Returned Status Code: " + statusCode.toString());
-            listener.getLogger().println("Splits created successfuly from (" + splitYAMLFileFullPath + ")!");
+            listener.getLogger().println("Splits created successfully from (" + splitYAMLFileFullPath + ")!");
         }
         if (splitTask.equals("addToEnvironment")) {
-            statusCode=spAdmin.AddSplitToEnvironment(workspaceId, environmentName, splitName,  splitDefinitions);
+            statusCode=spAdmin.addSplitToEnvironment(workspaceId, environmentName, splitName,  splitDefinitions);
             listener.getLogger().println("Returned Status Code: " + statusCode.toString());
             listener.getLogger().println("Split (" + splitName + ") is added to (" + environmentName + ") Environment!");
         }
         if (splitTask.equals("killSplit")) {
-            statusCode=spAdmin.KillSplit(workspaceId, environmentName, splitName);
+            statusCode=spAdmin.killSplit(workspaceId, environmentName, splitName);
             listener.getLogger().println("Returned Status Code: " + statusCode.toString());
             listener.getLogger().println("Split (" + splitName + ") is killed!");
         }
         if (splitTask.equals("addToWhitelist")) {
-            statusCode=spAdmin.AddWhiteListToSplit(workspaceId, environmentName, splitName,  treatmentName, whitelistKey);
+            statusCode=spAdmin.addWhiteListToSplit(workspaceId, environmentName, splitName,  treatmentName, whitelistKey);
             listener.getLogger().println("Returned Status Code: " + statusCode.toString());
             listener.getLogger().println("Key  (" + whitelistKey + ") is added to ("+treatmentName+") Whitelist in Split ("+splitName+")");
         }
         if (splitTask.equals("deleteSplit")) {
-            statusCode=spAdmin.DeleteSplit(workspaceId, splitName);
+            statusCode=spAdmin.deleteSplit(workspaceId, splitName);
             listener.getLogger().println("Returned Status Code: " + statusCode.toString());
             listener.getLogger().println("Split (" + splitName + ") is deleted!");
         }
         if (splitTask.equals("deleteSplitDefinition")) {
-            statusCode=spAdmin.DeleteSplitDefinition(workspaceId, environmentName, splitName);
+            statusCode=spAdmin.deleteSplitDefinition(workspaceId, environmentName, splitName);
             listener.getLogger().println("Returned Status Code: " + statusCode.toString());
             listener.getLogger().println("Split (" + splitName + ") definition is deleted!");
         }

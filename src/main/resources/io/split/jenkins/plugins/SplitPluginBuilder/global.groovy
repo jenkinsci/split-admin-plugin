@@ -1,3 +1,5 @@
+package io.split.jenkins.plugins.SplitPluginBuilder
+
 f = namespace("/lib/form")
 f.section(title: _("Split Admin Plugin")) {
 	f.entry(field: "splitAdminApiKey", title: _("Split Admin API Key")) {
