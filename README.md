@@ -28,7 +28,7 @@ To enable Debug logging, create a new logger in ***Manage Jenkins***->***System 
 io.split.jenkins.plugins
 ```
 
-##Supported Tasks##
+## Supported Tasks
 
  * **Create Split From YAML File**: This task will read a given YAML file populated with Splits containing treatments, whitelisted keys, dynamic configs and percentages for default rule, see YAML format section below. The plugin will check if Split and Split definitions exists in the given workspace/environment, if not, the subtask is skipped, the fields below are required:
     `Workspace Name`
@@ -69,7 +69,7 @@ The Split Definitions field should match the JSON structure accepted by Split Ad
     `Workspace Name`
     `Split Name`
     
-###YAML format###
+### YAML format
 ```yaml
 - split_name:
      treatment: "treatment_applied_to_this_entry"
@@ -77,7 +77,7 @@ The Split Definitions field should match the JSON structure accepted by Split Ad
      percentage: "integer between (0-100)"
 ```
 
-###Examples###
+### Examples
 
  * Split below has 3 treatments (on/off/unallocated), only "on" treatment contains whitelisted id "key1". For default rule, "on" is set to 80%, "off" is set to 10%, the plugin will assign the last 10% to "unallocated" treatment. 
 ```yaml
