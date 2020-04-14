@@ -12,11 +12,11 @@ In Jenkins Plugin Manager page, under "Available" tab, type "Split Jenkins" to f
 
 1. Store the Split Admin API Key in "Split Admin API Key" edit box found in "Manage Jenkins->Configure System" page
 
-![Configure System](https://github.com/splitio/jenkins-split-plugin/images/img1.png)
+![Configure System](https://raw.githubusercontent.com/splitio/jenkins-split-plugin/master/images/img1.png?token=AJY6664VJRRJKKIJXVCHYA26T5P24)
 
 2. To use the plugin in Jenkins Jobs, under the Configure section of the job, click "Add build step" and select "Split Admin Task"
 
-![Build Step](https://github.com/splitio/jenkins-split-plugin/images/img2.png)
+![Build Step](https://raw.githubusercontent.com/splitio/jenkins-split-plugin/master/images/img2.png?token=AJY666ZLBIL3ERIPQMARFFS6T5QAA)
 
 3. Select a task from the available options, see below for supported tasks, fill out the fields that are required for each task and click "Save".
 
