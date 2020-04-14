@@ -1,14 +1,14 @@
 
-#jenkins-split-plugin
+# jenkins-split-plugin
 Jenkins plugin that uses Split Admin REST API to allow creating,  updating and deleting Splits as part of Test automation and build workflow.
 Reference to Split Admin API can be found [here](https://docs.split.io/reference)
 
-##Installation##
+## Installation
 In Jenkins Plugin Manager page, under "Available" tab, type "Split Jenkins" to find the plugin and install it.
 
 [[[ADD IMAGE HERE]]]
 
-##How to Use##
+## How to Use
 
 1. Store the Split Admin API Key in "Split Admin API Key" edit box found in "Manage Jenkins->Configure System" page
 
