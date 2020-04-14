@@ -1,0 +1,30 @@
+- percentage_less_100_split:
+    treatment: "on"
+    keys: ["key1"]
+    percentage: "80"
+- percentage_less_100_split:
+    treatment: "off"
+    percentage: "10"
+- percentage_less_100_split:
+    treatment: "unallocated"
+- no_rule_split:
+    treatment: "on"
+- no_rule_split:
+    treatment: "off"
+- one_treatment_split:
+    treatment: "one"
+- correct_data_split:
+    treatment: "on"
+    config: "this applies only to ON treatment"
+    percentage: "50"
+- correct_data_split:
+    treatment: "off"
+    keys: ["key1", "key2"]
+    config: "this applies only to OFF treatment"
+- no_treatment_split:
+- diiff_treatment_names_split:
+    treatment: "high"
+- diiff_treatment_names_split:
+    treatment: "low"
+- diiff_treatment_names_split:
+    treatment: "medium"
