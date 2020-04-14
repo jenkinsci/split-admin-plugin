@@ -21,20 +21,29 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import io.split.jenkins.plugins.Split;
+import io.split.jenkins.plugins.Treatments;
+import io.split.jenkins.plugins.YAMLParser;
 
 import java.io.IOException;
 
+/**
+* Class wrapper for Split Admin API
+*
+* @author Bilal Al-Shshany
+*
+*/
 public class SplitAPI {
 
     private static final String SPLIT_API_BASE_URL = "https://api.split.io/internal/api/v2";
     private static Logger _log = Logger.getLogger(SplitAPI.class);
 
-	private String _apiKey = "";
-	private final int _httpError = -1;
+    private String _apiKey = "";
+    private final int _httpError = -1;
 
-	SplitAPI(String adminApiKey) {
-		_apiKey = adminApiKey;
-	}
+    SplitAPI(String adminApiKey) {
+        _apiKey = adminApiKey;
+    }
     
     public HTTPResponse execHTTPRequest(String httpRequest, String URL, String body) {
         int retryLimit = 10;
@@ -44,14 +53,14 @@ public class SplitAPI {
         while (retries < retryLimit) {
             retries++;
             try {
-            	httpResponse.statusCode = _httpError;
+                httpResponse.statusCode = _httpError;
                 _log.info("Executing " + httpRequest);
                 if (_log.isDebugEnabled()) {
-	                _log.debug("URL=" + URL);
-	                _log.debug("Body=" + body);
+                    _log.debug("URL=" + URL);
+                    _log.debug("Body=" + body);
                 }
 
-                httpResponse = this.executeHTTP(httpRequest, URL, body);
+                httpResponse = executeHTTP(httpRequest, URL, body);
 
                 _log.info("Status Code returned=" + httpResponse.statusCode);
                 if (httpResponse.statusCode == 429) {  // Rate Limit Reached
@@ -66,82 +75,82 @@ public class SplitAPI {
                 _log.error("Unexpected Error running " + httpRequest + "operation ", e);
             }
         }
-        this.checkStatus(httpResponse.statusCode);
+        checkStatus(httpResponse.statusCode);
         return httpResponse;
     }
     
     private Header[] getHeaders() {
-    	Header[] headers = {
-    			new BasicHeader("Content-type" , "application/json"), 
-    			new BasicHeader("Authorization", "Bearer " + _apiKey)
-    	};
-    	return headers;
+        Header[] headers = {
+                new BasicHeader("Content-type" , "application/json"),
+                new BasicHeader("Authorization", "Bearer " + _apiKey)
+        };
+        return headers;
     }
     
-	public HTTPResponse executeHTTP(String httpVerb, String URL, String body) throws ClientProtocolException, IOException {
-		CloseableHttpClient httpclient = HttpClients.createDefault();
-		int statusCode = _httpError;
+    public HTTPResponse executeHTTP(String httpVerb, String URL, String body) throws ClientProtocolException, IOException {
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        int statusCode = _httpError;
         String mresp = "";
-		Object httpAction = "";
-		try {
+        Object httpAction = "";
+        try {
             switch(httpVerb) {
-	            case "GetHTTP":
-	            	httpAction = new HttpGet(URL);
-	                break;
-	            case "DeleteHTTP":
-	            	httpAction = new HttpDelete(URL);
-	                break;
-	            case "PostHTTP":
-	            	httpAction = new HttpPost(URL);
-	                break;
-	            case "PatchHTTP":
-	            	httpAction = new HttpPatch(URL);
-	                break;
-	            case "PutHTTP":
-	            	httpAction = new HttpPut(URL);
-	                break;
-	            default:
-	            	statusCode = _httpError;
+                case "GetHTTP":
+                    httpAction = new HttpGet(URL);
+                    break;
+                case "DeleteHTTP":
+                    httpAction = new HttpDelete(URL);
+                    break;
+                case "PostHTTP":
+                    httpAction = new HttpPost(URL);
+                    break;
+                case "PatchHTTP":
+                    httpAction = new HttpPatch(URL);
+                    break;
+                case "PutHTTP":
+                    httpAction = new HttpPut(URL);
+                    break;
+                default:
+                    statusCode = _httpError;
             }
-            ((AbstractHttpMessage) httpAction).setHeaders(this.getHeaders());
+            ((AbstractHttpMessage) httpAction).setHeaders(getHeaders());
 
             if (httpVerb.equals("PostHTTP") || httpVerb.equals("PatchHTTP") || httpVerb.equals("PutHTTP"))
-            	((HttpEntityEnclosingRequestBase) httpAction).setEntity(new StringEntity(body));
+                ((HttpEntityEnclosingRequestBase) httpAction).setEntity(new StringEntity(body));
 
-	    	CloseableHttpResponse  response = httpclient.execute((HttpUriRequest) httpAction);
-	    	HttpEntity entity = response.getEntity();
+            CloseableHttpResponse  response = httpclient.execute((HttpUriRequest) httpAction);
+            HttpEntity entity = response.getEntity();
             mresp = EntityUtils.toString(entity);
 
             if (_log.isDebugEnabled()) {
-	            _log.debug("Response: ");
-	            _log.debug(mresp);
+                _log.debug("Response: ");
+                _log.debug(mresp);
             }
-	    	statusCode = response.getStatusLine().getStatusCode();
+            statusCode = response.getStatusLine().getStatusCode();
         } catch (RuntimeException e) {
             throw e;
-		} catch (Exception e) {
+        } catch (Exception e) {
             _log.error("Unexpected Error running "+httpVerb+" operation ", e);
         } finally {
             httpclient.close();
         }
         return new HTTPResponse(statusCode, mresp);
-	}
-	
+    }
+    
     public String getWorkspaceId(String workspaceName) {
         String wsId = "";
         try {
             String resp = execHTTPRequest("GetHTTP",SPLIT_API_BASE_URL + "/workspaces", null).response;
-        	JSONParser parser = new JSONParser();
-        	Object obj = parser.parse(resp);
-        	JSONObject jsTemp = (JSONObject) obj;
+            JSONParser parser = new JSONParser();
+            Object obj = parser.parse(resp);
+            JSONObject jsTemp = (JSONObject) obj;
             JSONArray jsArray = (JSONArray) jsTemp.get("objects");
             for (int ws = 0; ws < jsArray.size(); ws++) {
-            	JSONObject jsItem = (JSONObject) jsArray.get(ws);
-            	String temp = jsItem.get("name").toString();
+                JSONObject jsItem = (JSONObject) jsArray.get(ws);
+                String temp = jsItem.get("name").toString();
                 if  (temp.equals(workspaceName)) {
-                    wsId = jsItem.get("id").toString();                	
+                    wsId = jsItem.get("id").toString();
                 }
-        	}
+            }
         } catch (Exception e) {
             _log.error("Unexpected Error getting Workspace Id ", e);
         }
@@ -149,16 +158,16 @@ public class SplitAPI {
     }
     
     public int createSplit(String workspaceId, String trafficTypeName, String splitName, String description) {
-    	int statusCode = _httpError;
+        int statusCode = _httpError;
         try {
-        	if (!checkSplitExists(workspaceId, splitName)) {
+            if (!checkSplitExists(workspaceId, splitName)) {
                 String URL = SPLIT_API_BASE_URL + "/splits/ws/" + workspaceId + "/trafficTypes/" + trafficTypeName;
                 String data = "{\"name\":\"" + splitName + "\", \"description\": \"" + description + "\"}";
                 statusCode = execHTTPRequest("PostHTTP", URL, data).statusCode;
-        	} else {
-        		_log.info("Split name:" + splitName + " already exist, skipping");
+            } else {
+                _log.info("Split name:" + splitName + " already exist, skipping");
                 statusCode = 200;
-        	}           
+            }
         } catch (Exception e) {
             _log.error("Unexpected Error creating Split name:" + splitName, e);
         }
@@ -166,7 +175,7 @@ public class SplitAPI {
     }
     
     public int addSplitToEnvironment(String workspaceId, String environmentName, String splitName, String definition) {
-    	int statusCode = _httpError;
+        int statusCode = _httpError;
         try {
             if (!checkSplitDefinitionExists(workspaceId, environmentName, splitName)) {
                 String URL = SPLIT_API_BASE_URL + "/splits/ws/" + workspaceId + "/" + splitName + "/environments/" + environmentName;
@@ -182,7 +191,7 @@ public class SplitAPI {
     }
     
     public int killSplit(String workspaceId, String environmentName, String splitName) {
-    	int statusCode = _httpError;    	
+        int statusCode = _httpError;
         try {
             String URL = SPLIT_API_BASE_URL + "/splits/ws/" + workspaceId + "/" + splitName + "/environments/" + environmentName + "/kill";
             statusCode = execHTTPRequest("PutHTTP", URL, "{ \"comment\": \"Killed By Jenkins Split Admin API\"}").statusCode;
@@ -193,7 +202,7 @@ public class SplitAPI {
     }
     
     public int deleteSplit(String workspaceId, String splitName) {
-    	int statusCode = _httpError;    	
+        int statusCode = _httpError;
         try {
             if (checkSplitExists(workspaceId, splitName)) {
                 String URL = SPLIT_API_BASE_URL + "/splits/ws/" + workspaceId + "/" + splitName;
@@ -210,7 +219,7 @@ public class SplitAPI {
 
     
     public int addWhiteListToSplit(String workspaceId, String environmentName, String splitName, String treatmentName, String whitelistKey) {
-    	int statusCode = _httpError;    	
+        int statusCode = _httpError;
         try {
             String patchData = "";
             int treatmentOrder = getTreatmentOrder(workspaceId, environmentName, splitName, treatmentName);
@@ -238,7 +247,7 @@ public class SplitAPI {
             for (int ws = 0; ws < jsArray.size(); ws++) {
                 JSONObject jsItem = (JSONObject) jsArray.get(ws);
                 if (treatmentName.equals(jsItem.get("name").toString())) {
-                	treatmentFound = true;
+                    treatmentFound = true;
                     break;
                 }
                 treatmentOrder++;
@@ -251,7 +260,7 @@ public class SplitAPI {
     }
     
     private boolean checkWhitelistSectionExist(String workspaceId, String environmentName, String splitName, String treatmentName) {
-    	boolean whiteListSectionExist = false;
+        boolean whiteListSectionExist = false;
         try {
             String resp = getSplitDefinition(workspaceId, splitName, environmentName);
             JSONParser parser = new JSONParser();
@@ -274,9 +283,9 @@ public class SplitAPI {
     }
 
     public String getSplitDefinition(String workspaceId, String splitName, String environmentName) {
-    	String splitDefinition = "";
+        String splitDefinition = "";
         try {
-        	splitDefinition = execHTTPRequest("GetHTTP",SPLIT_API_BASE_URL + "/splits/ws/" + workspaceId + "/" + splitName + "/environments/" + environmentName, "").response;
+            splitDefinition = execHTTPRequest("GetHTTP",SPLIT_API_BASE_URL + "/splits/ws/" + workspaceId + "/" + splitName + "/environments/" + environmentName, "").response;
         } catch (Exception e) {
             _log.error("Unexpected Error getting Split definition for split name:" + splitName, e);
         }
@@ -309,7 +318,7 @@ public class SplitAPI {
                     if (_log.isDebugEnabled()) {
                         _log.debug(splitDefinitions);
                     }
-                    this.addSplitToEnvironment(workspaceId, environmentName, splitName, splitDefinitions);
+                    addSplitToEnvironment(workspaceId, environmentName, splitName, splitDefinitions);
                 } else _log.info("Split definitions for split name:" + splitName + " already exists in environment! Skipping.");
 
             }
@@ -321,9 +330,9 @@ public class SplitAPI {
     }
 
     public String getSplitsList(String workspaceId) {
-    	String splitList = "";
+        String splitList = "";
         try {
-        	splitList = execHTTPRequest("GetHTTP", SPLIT_API_BASE_URL + "/splits/ws/" + workspaceId, null).response;
+            splitList = execHTTPRequest("GetHTTP", SPLIT_API_BASE_URL + "/splits/ws/" + workspaceId, null).response;
         } catch (Exception e) {
             _log.error("Unexpected Error getting Split list ", e);
         }
@@ -331,9 +340,9 @@ public class SplitAPI {
     }
 
     public String getSplitsInEnvironmentList(String workspaceId, String environmentName) {
-    	String splitsInEnvironment = ""; 
+        String splitsInEnvironment = "";
         try {
-        	splitsInEnvironment = execHTTPRequest("GetHTTP", SPLIT_API_BASE_URL + "/splits/ws/" + workspaceId + "/environments/" + environmentName, null).response;
+            splitsInEnvironment = execHTTPRequest("GetHTTP", SPLIT_API_BASE_URL + "/splits/ws/" + workspaceId + "/environments/" + environmentName, null).response;
         } catch (Exception e) {
             _log.error("Unexpected Error getting Splits in Environment list ", e);
         }
@@ -341,7 +350,7 @@ public class SplitAPI {
     }
 
     private boolean checkSplitExists(String workspaceId, String splitName) {
-    	boolean splitExists = false;
+        boolean splitExists = false;
         try {
             String resp = getSplitsList(workspaceId);
             JSONParser parser = new JSONParser();
@@ -352,8 +361,8 @@ public class SplitAPI {
                 JSONObject jsItem = (JSONObject) jsArray.get(ws);
                 String temp = jsItem.get("name").toString();
                 if  (temp.equals(splitName)) {
-                	splitExists = true;
-                	break;
+                    splitExists = true;
+                    break;
                 }
             }
         } catch (Exception e) {
@@ -366,7 +375,7 @@ public class SplitAPI {
     }
 
     private boolean checkSplitDefinitionExists(String workspaceId, String environmentName, String splitName) {
-    	boolean splitDefinitionExist = false;
+        boolean splitDefinitionExist = false;
         try {
             String resp = getSplitsInEnvironmentList(workspaceId, environmentName);
             JSONParser parser = new JSONParser();
@@ -377,8 +386,8 @@ public class SplitAPI {
                 JSONObject jsItem = (JSONObject) jsArray.get(ws);
                 String temp = jsItem.get("name").toString();
                 if  (temp.equals(splitName)) {
-                	splitDefinitionExist = true;
-                	break;
+                    splitDefinitionExist = true;
+                    break;
                 }
             }
         } catch (Exception e) {
@@ -397,7 +406,7 @@ public class SplitAPI {
     }
 
     public int deleteSplitDefinition(String workspaceId, String environmentName, String splitName) {
-    	int statusCode = _httpError;    	
+        int statusCode = _httpError;
         try {
             if (checkSplitDefinitionExists(workspaceId, environmentName, splitName)) {
                 String URL = SPLIT_API_BASE_URL + "/splits/ws/" + workspaceId + "/" + splitName + "/environments/" + environmentName;
@@ -413,6 +422,12 @@ public class SplitAPI {
     }
 }
 
+/**
+* Class for http response structure
+*
+* @author Bilal Al-Shshany
+*
+*/
 class HTTPResponse {
 
     public int statusCode;

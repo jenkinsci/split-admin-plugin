@@ -2,7 +2,6 @@ package io.split.jenkins.plugins;
 
 import org.apache.log4j.Logger;
 import org.yaml.snakeyaml.Yaml;
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -11,6 +10,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+* Class to parse Split information from YAML file
+*
+* @author Bilal Al-Shshany
+*
+*/
 public class YAMLParser {
 
     private static Logger _log = Logger.getLogger(YAMLParser.class);

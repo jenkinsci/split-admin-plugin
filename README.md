@@ -1,13 +1,17 @@
-# jenkins-split-plugin
+<h2 id="jenkins-split-plugin" class="header-anchor">jenkins-split-plugin</h2>
 <p>Jenkins plugin that use Split Admin REST API to allow creating and updating and deleting Splits as part of Test automation and build workflow.<br />
 Reference to Split Admin API can be found <a href="https://docs.split.io/reference">here</a></p>
-<h3 id="installations" class="header-anchor">Installation</h3>
+<h3 id="installations" class="header-anchor">Installations</h3>
 <p>In Jenkins Plugin Manager page, under "Available" tab, type "Split Admin API" to find the plugin and install it.</p>
 <h3 id="how-to-use" class="header-anchor">How to Use</h3>
 <p>1- Store the the Split Admin API Key in "Split Admin API Key" edit box found in "Manage Jenkins-&gt;Configure System" page</p>
 <p>2- To use the plugin in Jenkins Jobs, under the Configure section of the job, click "Add build step" and select "Split Admin Task"</p>
 <p>3- Select a task from the drop down list, see below for supported tasks, fill out the fields that are required for each task and click "Save".</p>
 <p>Note: If the Admin API call return code is 429 (throttled), the plugin will sleep for 5 seconds then retry the request, max retired are capped at 10.   </p>
+<p>4- Plugin use Apache Log4j class for logging. Debug level will log every HTTP request headers and body and response payload returned.<br />
+To enable Debug logging, create a new logger in <strong><em>Manage Jenkins</em></strong>-&gt;<strong><em>System Log</em></strong>-&gt;<strong><em>New Log Recorder</em></strong>, set the logger class to</p>
+<pre class="prettyprint"><code>io.split.jenkins.plugins</code></pre>
+<p>Set the Log level to <strong>ALL</strong></p>
 <h3 id="supported-tasks" class="header-anchor">Supported Tasks</h3>
 <p>1- <strong>Create Split</strong>: This task will create a new Split, the fields below are required, the plugin will check if Split does not exist in the given workspace, if it exist, the task is skipped, no errors returned: <br />
     <em>Workspace Name</em><br />

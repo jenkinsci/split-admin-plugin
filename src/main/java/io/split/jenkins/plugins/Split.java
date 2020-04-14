@@ -1,6 +1,6 @@
 package io.split.jenkins.plugins;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,14 +30,13 @@ public class Split {
     }
 
     public void addTreatment(Treatments newTreatment) {
-//    	List<Treatments> tempTreatments = new ArrayList<Treatments>();
-//    	if (this.treatments != null) {
-//        	for (Treatments treatment : this.treatments) {
-//        		tempTreatments.add(treatment);
-//            }
-//    	}
-        List<Treatments> tempTreatments = Arrays.asList(treatments);
-    	tempTreatments.add(newTreatment);
+        List<Treatments> tempTreatments = new ArrayList<Treatments>();
+        if (this.treatments!=null) {
+            for (Treatments t : this.treatments) {
+                tempTreatments.add(t);
+            }
+        }
+        tempTreatments.add(newTreatment);
     	this.treatments = tempTreatments.toArray(new Treatments[0]);
     }
 
