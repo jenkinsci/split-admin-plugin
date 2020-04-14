@@ -119,3 +119,4 @@ The Split Definitions field should match the JSON structure accepted by Split Ad
 ```yaml
 - no_treatment_split:
 ```
+For any questions, comments or issues, please contact [Split Support](mailto:support@split.io)
