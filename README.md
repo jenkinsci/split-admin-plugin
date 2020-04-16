@@ -5,9 +5,7 @@ Jenkins plugin that uses Split Admin REST API to allow creating,  updating and d
 Reference to Split Admin API can be found [here](https://docs.split.io/reference)
 
 ## Installation
-In Jenkins Plugin Manager page, under "Available" tab, type "Split Jenkins" to find the plugin and install it.
-
-[[[ADD IMAGE HERE]]]
+In Jenkins Plugin Manager page, under "Available" tab, type "Split Admin" to find the plugin and install it.
 
 ## How to Use
 
