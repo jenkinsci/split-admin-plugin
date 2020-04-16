@@ -21,11 +21,11 @@ import org.apache.log4j.Logger;
 import net.sf.json.JSONObject;
 
 /**
- * Class implementing Jenkins plugin builder and descriptor
- *
- * @author Bilal Al-Shshany
- *
- */
+* Class implementing Jenkins plugin builder and descriptor
+*
+* @author Bilal Al-Shshany
+*
+*/
 public class SplitPluginBuilder extends Builder implements SimpleBuildStep {
 
     private final String splitTask;
@@ -38,12 +38,13 @@ public class SplitPluginBuilder extends Builder implements SimpleBuildStep {
     private final String whitelistKey;
     private final String splitYAMLFile;
     private String apiKey;
+    private String adminBaseURL;
     private static Logger _log = Logger.getLogger(SplitAPI.class);
 
 
     @DataBoundConstructor
     public SplitPluginBuilder(String splitTask, String[] splitName, String[] environmentName, String[] workspaceName, String[] trafficTypeName, String splitDefinitions, String whitelistKey, String treatmentName, String splitYAMLFile) {
-
+        
         this.splitName = splitName.clone();
         this.environmentName = environmentName.clone();
         this.workspaceName = workspaceName.clone();
@@ -54,6 +55,7 @@ public class SplitPluginBuilder extends Builder implements SimpleBuildStep {
         this.splitTask = splitTask;
         this.splitYAMLFile = splitYAMLFile;
         this.apiKey = DescriptorImpl.getSplitAdminApiKey();
+        this.adminBaseURL = DescriptorImpl.getAdminBaseURL();
     }
 
     private int getSplitNameIndex(String splitTask) {
@@ -66,7 +68,7 @@ public class SplitPluginBuilder extends Builder implements SimpleBuildStep {
         if (splitTask.equals("deleteSplit")) index = 5;
         return index;
     }
-
+    
     private int getWorkspaceIndex(String splitTask) {
         int index = 0;
         if (splitTask.equals("createSplitFromYAML")) index = 0;
@@ -96,7 +98,7 @@ public class SplitPluginBuilder extends Builder implements SimpleBuildStep {
         return index;
     }
 
-
+    
     public String getTrafficTypeName() {
         return trafficTypeName[getTrafficTypeIndex(splitTask)];
     }
@@ -104,15 +106,15 @@ public class SplitPluginBuilder extends Builder implements SimpleBuildStep {
     public String getSplitYAMLFile() {
         return splitYAMLFile;
     }
-
+    
     public String getTreatmentName() {
         return treatmentName;
     }
-
+    
     public String getWhitelistKey() {
         return whitelistKey;
     }
-
+    
     public String getSplitDefinitions() {
         return splitDefinitions;
     }
@@ -128,7 +130,7 @@ public class SplitPluginBuilder extends Builder implements SimpleBuildStep {
     public String getWorkspaceName() {
         return workspaceName[getWorkspaceIndex(splitTask)];
     }
-
+    
     public String getSplitTask() {
         return splitTask;
     }
@@ -137,14 +139,24 @@ public class SplitPluginBuilder extends Builder implements SimpleBuildStep {
         this.apiKey = splitApiKey;
     }
 
+    public void setAdminBaseURL(String adminBaseURL) {
+        this.adminBaseURL = adminBaseURL;
+    }
+
     @Override
     public void perform(Run<?, ?> run, FilePath workspace, Launcher launcher, TaskListener listener) throws InterruptedException, IOException {
         String splitYAMLFileFullPath = "";
         splitYAMLFileFullPath = workspace.getRemote() + "/" + splitYAMLFile;
         _log.info("Selected Task: " + splitTask);
         listener.getLogger().println("Selected Task: " + splitTask);
-        if (this.apiKey.equals("")) this.apiKey = DescriptorImpl.getSplitAdminApiKey();
-        SplitAPI spAdmin = new SplitAPI(this.apiKey);
+        if (this.apiKey.equals("")) {
+            this.apiKey = DescriptorImpl.getSplitAdminApiKey();
+        }
+        if (this.adminBaseURL.equals("")) {
+            this.adminBaseURL = DescriptorImpl.getAdminBaseURL();
+        }
+
+        SplitAPI spAdmin = new SplitAPI(this.apiKey, this.adminBaseURL);
         String workspaceId = spAdmin.getWorkspaceId(workspaceName[getWorkspaceIndex(splitTask)]);
         listener.getLogger().println("WorkspaceId: " + workspaceId);
         Integer statusCode = 0;
@@ -186,24 +198,34 @@ public class SplitPluginBuilder extends Builder implements SimpleBuildStep {
         _log.info("Task:" + splitTask + " is completed");
 
     }
-
+    
     @Symbol("greet")
     @Extension
     public static final class DescriptorImpl extends BuildStepDescriptor<Builder> {
         static String splitAdminApiKey = "";
+        static String splitAdminBaseURL = "https://api.split.io/internal/api/v2";
 
         public static String getSplitAdminApiKey() {
             return splitAdminApiKey;
         }
-
+        
         public static void setSplitAdminApiKey(String splitApiKey) {
             splitAdminApiKey = splitApiKey;
         }
-
+        
+        public static String getAdminBaseURL() {
+            return splitAdminBaseURL;
+        }
+        
+        public static void setAdminBaseURL(String baseURL) {
+            splitAdminBaseURL = baseURL;
+        }
+        
         @Override
         public boolean configure(StaplerRequest req, JSONObject formData)
                 throws FormException {
             setSplitAdminApiKey(req.getParameter("ext_split_admin_api_key"));
+            setAdminBaseURL(req.getParameter("ext_admin_base_url"));
             save();
             return super.configure(req, formData);
         }
