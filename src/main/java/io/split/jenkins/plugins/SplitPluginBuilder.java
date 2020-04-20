@@ -40,7 +40,7 @@ public class SplitPluginBuilder extends Builder implements SimpleBuildStep {
     private String apiKey;
     private String adminBaseURL;
     private static Logger _log = Logger.getLogger(SplitAPI.class);
-
+    private String splitYAMLFileFullPath = "";
 
     @DataBoundConstructor
     public SplitPluginBuilder(String splitTask, String[] splitName, String[] environmentName, String[] workspaceName, String[] trafficTypeName, String splitDefinitions, String whitelistKey, String treatmentName, String splitYAMLFile) {
@@ -143,10 +143,15 @@ public class SplitPluginBuilder extends Builder implements SimpleBuildStep {
         this.adminBaseURL = adminBaseURL;
     }
 
+    public void setSplitYAMLFileFullPath(String filePath) {
+        this.splitYAMLFileFullPath = filePath;
+    }
+    
     @Override
     public void perform(Run<?, ?> run, FilePath workspace, Launcher launcher, TaskListener listener) throws InterruptedException, IOException {
-        String splitYAMLFileFullPath = "";
-        splitYAMLFileFullPath = workspace.getRemote() + "/" + splitYAMLFile;
+        if (splitYAMLFileFullPath.equals("")) {
+            splitYAMLFileFullPath = workspace.getRemote() + "/" + splitYAMLFile;
+        }
         _log.info("Selected Task: " + splitTask);
         listener.getLogger().println("Selected Task: " + splitTask);
         if (this.apiKey.equals("")) {
