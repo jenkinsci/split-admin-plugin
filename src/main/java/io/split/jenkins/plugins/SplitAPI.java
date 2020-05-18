@@ -35,14 +35,15 @@ import java.io.IOException;
 */
 public class SplitAPI {
 
-    private static final String SPLIT_API_BASE_URL = "https://api.split.io/internal/api/v2";
     private static Logger _log = Logger.getLogger(SplitAPI.class);
 
     private String _apiKey = "";
+    private String _adminBaseURL = "";
     private final int _httpError = -1;
 
-    SplitAPI(String adminApiKey) {
+    SplitAPI(String adminApiKey, String adminBaseURL) {
         _apiKey = adminApiKey;
+        _adminBaseURL = adminBaseURL;
     }
     
     public HTTPResponse execHTTPRequest(String httpRequest, String URL, String body) {
@@ -139,7 +140,7 @@ public class SplitAPI {
     public String getWorkspaceId(String workspaceName) {
         String wsId = "";
         try {
-            String resp = execHTTPRequest("GetHTTP",SPLIT_API_BASE_URL + "/workspaces", null).response;
+            String resp = execHTTPRequest("GetHTTP",_adminBaseURL + "/workspaces", null).response;
             JSONParser parser = new JSONParser();
             Object obj = parser.parse(resp);
             JSONObject jsTemp = (JSONObject) obj;
@@ -161,7 +162,7 @@ public class SplitAPI {
         int statusCode = _httpError;
         try {
             if (!checkSplitExists(workspaceId, splitName)) {
-                String URL = SPLIT_API_BASE_URL + "/splits/ws/" + workspaceId + "/trafficTypes/" + trafficTypeName;
+                String URL = _adminBaseURL + "/splits/ws/" + workspaceId + "/trafficTypes/" + trafficTypeName;
                 String data = "{\"name\":\"" + splitName + "\", \"description\": \"" + description + "\"}";
                 statusCode = execHTTPRequest("PostHTTP", URL, data).statusCode;
             } else {
@@ -178,7 +179,7 @@ public class SplitAPI {
         int statusCode = _httpError;
         try {
             if (!checkSplitDefinitionExists(workspaceId, environmentName, splitName)) {
-                String URL = SPLIT_API_BASE_URL + "/splits/ws/" + workspaceId + "/" + splitName + "/environments/" + environmentName;
+                String URL = _adminBaseURL + "/splits/ws/" + workspaceId + "/" + splitName + "/environments/" + environmentName;
                 statusCode = execHTTPRequest("PostHTTP", URL, definition).statusCode;
             } else {
                 _log.info("Split definition already exist, skipping");
@@ -193,7 +194,7 @@ public class SplitAPI {
     public int killSplit(String workspaceId, String environmentName, String splitName) {
         int statusCode = _httpError;
         try {
-            String URL = SPLIT_API_BASE_URL + "/splits/ws/" + workspaceId + "/" + splitName + "/environments/" + environmentName + "/kill";
+            String URL = _adminBaseURL + "/splits/ws/" + workspaceId + "/" + splitName + "/environments/" + environmentName + "/kill";
             statusCode = execHTTPRequest("PutHTTP", URL, "{ \"comment\": \"Killed By Jenkins Split Admin API\"}").statusCode;
         } catch (Exception e) {
             _log.error("Unexpected Error killing Split name:" + splitName, e);
@@ -205,7 +206,7 @@ public class SplitAPI {
         int statusCode = _httpError;
         try {
             if (checkSplitExists(workspaceId, splitName)) {
-                String URL = SPLIT_API_BASE_URL + "/splits/ws/" + workspaceId + "/" + splitName;
+                String URL = _adminBaseURL + "/splits/ws/" + workspaceId + "/" + splitName;
                 statusCode = execHTTPRequest("DeleteHTTP", URL, null).statusCode;
             } else {
                 _log.info("Split name:" + splitName + " does not exist, skipping");
@@ -227,7 +228,7 @@ public class SplitAPI {
                 patchData = "[{\"op\": \"add\", \"path\": \"/treatments/" + treatmentOrder + "/keys/-\", \"value\": \"" + whitelistKey + "\"}]";
             else
                 patchData="[{\"op\": \"add\", \"path\": \"/treatments/" + treatmentOrder + "/keys\", \"value\": [\"" + whitelistKey + "\"]}]";
-            String URL = SPLIT_API_BASE_URL + "/splits/ws/" + workspaceId + "/" + splitName + "/environments/" + environmentName;
+            String URL = _adminBaseURL + "/splits/ws/" + workspaceId + "/" + splitName + "/environments/" + environmentName;
             statusCode =  execHTTPRequest("PatchHTTP", URL, patchData).statusCode;
         } catch (Exception e) {
             _log.error("Unexpected Error adding Whitelist to Split name:" + splitName, e);
@@ -285,7 +286,7 @@ public class SplitAPI {
     public String getSplitDefinition(String workspaceId, String splitName, String environmentName) {
         String splitDefinition = "";
         try {
-            splitDefinition = execHTTPRequest("GetHTTP",SPLIT_API_BASE_URL + "/splits/ws/" + workspaceId + "/" + splitName + "/environments/" + environmentName, "").response;
+            splitDefinition = execHTTPRequest("GetHTTP",_adminBaseURL + "/splits/ws/" + workspaceId + "/" + splitName + "/environments/" + environmentName, "").response;
         } catch (Exception e) {
             _log.error("Unexpected Error getting Split definition for split name:" + splitName, e);
         }
@@ -332,7 +333,7 @@ public class SplitAPI {
     public String getSplitsList(String workspaceId) {
         String splitList = "";
         try {
-            splitList = execHTTPRequest("GetHTTP", SPLIT_API_BASE_URL + "/splits/ws/" + workspaceId, null).response;
+            splitList = execHTTPRequest("GetHTTP", _adminBaseURL + "/splits/ws/" + workspaceId, null).response;
         } catch (Exception e) {
             _log.error("Unexpected Error getting Split list ", e);
         }
@@ -342,7 +343,7 @@ public class SplitAPI {
     public String getSplitsInEnvironmentList(String workspaceId, String environmentName) {
         String splitsInEnvironment = "";
         try {
-            splitsInEnvironment = execHTTPRequest("GetHTTP", SPLIT_API_BASE_URL + "/splits/ws/" + workspaceId + "/environments/" + environmentName, null).response;
+            splitsInEnvironment = execHTTPRequest("GetHTTP", _adminBaseURL + "/splits/ws/" + workspaceId + "/environments/" + environmentName, null).response;
         } catch (Exception e) {
             _log.error("Unexpected Error getting Splits in Environment list ", e);
         }
@@ -409,7 +410,7 @@ public class SplitAPI {
         int statusCode = _httpError;
         try {
             if (checkSplitDefinitionExists(workspaceId, environmentName, splitName)) {
-                String URL = SPLIT_API_BASE_URL + "/splits/ws/" + workspaceId + "/" + splitName + "/environments/" + environmentName;
+                String URL = _adminBaseURL + "/splits/ws/" + workspaceId + "/" + splitName + "/environments/" + environmentName;
                 statusCode = execHTTPRequest("DeleteHTTP", URL, null).statusCode;
             } else {
                 _log.info("Split Definition name:" + splitName + " does not exist, skipping");
