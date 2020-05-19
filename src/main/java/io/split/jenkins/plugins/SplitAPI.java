@@ -80,7 +80,7 @@ public class SplitAPI {
                 _log.error("Unexpected Error running " + httpRequest + "operation ", e);
             }
         }
-        if (!(httpRequest.equals("DeleteHTTP") && httpResponse.statusCode==404)) {
+        if (!(httpRequest.equals("DeleteHTTP") && httpResponse.statusCode == 404)) {
         	checkStatus(httpResponse.statusCode);
         }
         return httpResponse;
@@ -177,7 +177,7 @@ public class SplitAPI {
             String URL = _adminBaseURL + "/splits/ws/" + workspaceId + "/trafficTypes/" + trafficTypeName;
             String data = "{\"name\":\"" + splitName + "\", \"description\": \"" + description + "\"}";
             statusCode = execHTTPRequest("PostHTTP", URL, data).statusCode;
-            if (statusCode==409) {
+            if (statusCode == 409) {
                 _log.info("Split name:" + splitName + " already exist, skipping");
                 statusCode = 200;
             }
@@ -192,7 +192,7 @@ public class SplitAPI {
         try {
             String URL = _adminBaseURL + "/splits/ws/" + workspaceId + "/" + splitName + "/environments/" + environmentName;
             statusCode = execHTTPRequest("PostHTTP", URL, definition).statusCode;
-            if (statusCode==409) {
+            if (statusCode == 409) {
                 _log.info("Split definition already exist, skipping");
                 statusCode = 200;
             }
@@ -218,7 +218,7 @@ public class SplitAPI {
         try {
             String URL = _adminBaseURL + "/splits/ws/" + workspaceId + "/" + splitName;
             statusCode = execHTTPRequest("DeleteHTTP", URL, null).statusCode;
-            if (statusCode==404) {
+            if (statusCode == 404) {
                 _log.info("Split name:" + splitName + " does not exist, skipping");
                 statusCode = 200;
             }
@@ -335,7 +335,7 @@ public class SplitAPI {
     value = "UC_USELESS_CONDITION",
     justification = "statusCode can still be -1")
     private void checkStatus(int statusCode) {
-        if ((statusCode!=200 && statusCode!=302 && statusCode!=202 && statusCode!=409) || statusCode==_httpError) {
+        if ((statusCode != 200 && statusCode != 302 && statusCode != 202 && statusCode != 409) || statusCode == _httpError) {
             throw new AssertionError("Admin API Call Failed with code " + Integer.toString(statusCode));
         }
     }
@@ -350,7 +350,7 @@ public class SplitAPI {
                 _log.error("Environment:" + environmentName + " does not exist");
                 throw new AssertionError("Environment:" + environmentName + " does not exist");
             }
-            if (statusCode==404) {
+            if (statusCode == 404) {
                 _log.info("Split Definition name:" + splitName + " does not exist, skipping");
                 statusCode = 200;
             }
@@ -370,23 +370,23 @@ public class SplitAPI {
     private void addEnvironmentsPerWorkspaceToMap(String workspaceId) {
         if (_environments.containsKey(workspaceId)) {
             _log.debug("Workspace:" + workspaceId + " found in cached list");
-        } else {
-	        try {
-	        	List<String> environments = new ArrayList<String>();
-	            String resp = execHTTPRequest("GetHTTP",_adminBaseURL + "/environments/ws/" + workspaceId, null).response;
-	            JSONParser parser = new JSONParser();
-	            Object obj = parser.parse(resp);
-	            JSONArray jsArray = (JSONArray) obj;
-	            for (int ws = 0; ws < jsArray.size(); ws++) {
-	                JSONObject jsItem = (JSONObject) jsArray.get(ws);
-	                environments.add(jsItem.get("name").toString());
-	                _log.debug("Adding environment:" + jsItem.get("name").toString() + " for Workspace:" + workspaceId + " to cached list");
+            return;
+        }
+        try {
+            List<String> environments = new ArrayList<String>();
+            String resp = execHTTPRequest("GetHTTP",_adminBaseURL + "/environments/ws/" + workspaceId, null).response;
+            JSONParser parser = new JSONParser();
+            Object obj = parser.parse(resp);
+            JSONArray jsArray = (JSONArray) obj;
+            for (int ws = 0; ws < jsArray.size(); ws++) {
+                JSONObject jsItem = (JSONObject) jsArray.get(ws);
+                environments.add(jsItem.get("name").toString());
+                _log.debug("Adding environment:" + jsItem.get("name").toString() + " for Workspace:" + workspaceId + " to cached list");
 
-	            }
-                addToEnvironmentsMap(workspaceId, environments);
-	        } catch (Exception e) {
-	            _log.error("Unexpected Error getting environment list for Workspace Id:"+workspaceId, e);
-	        }
+            }
+            addToEnvironmentsMap(workspaceId, environments);
+        } catch (Exception e) {
+            _log.error("Unexpected Error getting environment list for Workspace Id:"+workspaceId, e);
         }
     }
 
@@ -399,10 +399,10 @@ public class SplitAPI {
     public boolean checkIfEnvironmentExist(String workspaceId, String environmentName) {
         boolean environmentExist = false;
         if (_workspaces.containsValue(workspaceId)) {
-        	if (!_environments.containsKey(workspaceId)) {
+            if (!_environments.containsKey(workspaceId)) {
         		addEnvironmentsPerWorkspaceToMap(workspaceId);
         	}
-        	List <String> workspaceEnvironments = _environments.get(workspaceId);
+            List <String> workspaceEnvironments = _environments.get(workspaceId);
             for (int i = 0; i < workspaceEnvironments.size(); i++) {
                 if (workspaceEnvironments.get(i).equals(environmentName)) {
                 	environmentExist = true;

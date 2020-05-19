@@ -33,7 +33,7 @@ public class SplitPluginBuilderTest {
 
     private boolean checkAdminAPI() {
         boolean adminAPIValid = true;
-        if (splitAdminApi==null || splitAdminApi.equals("")) {
+        if (splitAdminApi == null || splitAdminApi.equals("")) {
             System.out.println("Admin API not set, skipping tests");
             adminAPIValid = false;
         }
