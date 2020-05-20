@@ -29,78 +29,95 @@ public class SplitPluginBuilderTest {
     final String splitDefinitions = "{\"treatments\":[{\"name\": \"premium\", \"description\": \"\"}, { \"name\": \"standard\", \"description\": \"\"}, { \"name\": \"current\", \"description\": \"\"}],\"defaultTreatment\":\"current\",\"rules\":[], \"defaultRule\":[{\"treatment\": \"current\", \"size\": 100}]}";
     final String treatmentName = "premium";
     final String whitelistKey = "bob";
-    final String splitYAMLFile = "/Users/bilalal-shahwany/Desktop/Projects/Java/SplitJenkins/split-plugin/src/test/java/io/jenkins/plugins/sample/splits.yaml";
+    final String splitYAMLFile = "/Users/bilalal-shahwany/Desktop/Projects/Java/SplitJenkins/split-plugin/src/test/java/io/split/jenkins/plugins/splits.yaml";
 
+    private boolean checkAdminAPI() {
+        boolean adminAPIValid = true;
+        if (splitAdminApi == null || splitAdminApi.equals("")) {
+            System.out.println("Admin API not set, skipping tests");
+            adminAPIValid = false;
+        }
+        return adminAPIValid;
+    }
+    
+    @Test
+    public void testCreateSplitFromYAML() throws Exception {
+        if (checkAdminAPI()) {
+            FreeStyleProject project = jenkins.createFreeStyleProject();
+            SplitPluginBuilder builder = prepareBuilder("createSplitFromYAML", new String[] {""}, environmentName, workspaceName, trafficTypeName, "", "", "", splitYAMLFile);
+            builder.setSplitYAMLFileFullPath(splitYAMLFile);
+            project.getBuildersList().add(builder);
+            FreeStyleBuild build = jenkins.buildAndAssertSuccess(project);
+            jenkins.assertLogContains("Splits created successfully from (", build);
+        }
+    }
 
     @Test
-    public void testSplitPlugin() throws Exception {
-        if (splitAdminApi==null || splitAdminApi.equals("")) {
-            System.out.println("Admin API not set, skipping tests");
-        } else {
-            testCreateSplit("createSplit");
-            testAddToEnvironment("addToEnvironment");
-            testAddToWhitelist("addKeyToWhitelist");
-            testKillSplit("killSplit");
-            testDeleteSplitDefinition("deleteSplitDefinition");
-            testDeleteSplit("deleteSplit");
-            testCreateSplitFromYAML("createSplitFromYAML");
+    public void testCreateAndDeleteSplit() throws Exception {
+        if (checkAdminAPI()) {
+            testCreateSplit();
+            testAddToEnvironment();
+            testAddToWhitelist();
+            testKillSplit();
+            testDeleteSplitDefinition();
+            testDeleteSplit();
         }
     }
     
-    private void testCreateSplit(String splitTask) throws Exception {
+    private void testCreateSplit() throws Exception {
         FreeStyleProject project = jenkins.createFreeStyleProject();
-        SplitPluginBuilder builder = prepareBuilder(splitTask, splitName, new String[] {""}, workspaceName, trafficTypeName, "", "", "", "");
+        SplitPluginBuilder builder = prepareBuilder("createSplit", splitName, new String[] {""}, workspaceName, trafficTypeName, "", "", "", "");
         project.getBuildersList().add(builder);
         FreeStyleBuild build = jenkins.buildAndAssertSuccess(project);
         jenkins.assertLogContains("Split (" + splitName[0] + ") is created!", build);
     }
 
-    private void testAddToEnvironment(String splitTask) throws Exception {
+    private void testAddToEnvironment() throws Exception {
         FreeStyleProject project = jenkins.createFreeStyleProject();
-        SplitPluginBuilder builder = prepareBuilder(splitTask, splitName, environmentName, workspaceName, new String[] {""}, splitDefinitions, "", "", "");
+        SplitPluginBuilder builder = prepareBuilder("addToEnvironment", splitName, environmentName, workspaceName, new String[] {""}, splitDefinitions, "", "", "");
         project.getBuildersList().add(builder);
         FreeStyleBuild build = jenkins.buildAndAssertSuccess(project);
         jenkins.assertLogContains("Split (" + splitName[0] + ") is added to ("+environmentName[0]+") Environment!", build);
     }
-
-    private void testAddToWhitelist(String splitTask) throws Exception {
+    
+    private void testAddToWhitelist() throws Exception {
         FreeStyleProject project = jenkins.createFreeStyleProject();
-        SplitPluginBuilder builder = prepareBuilder(splitTask, splitName, environmentName, workspaceName, new String[] {""}, "", whitelistKey, treatmentName, "");
+        SplitPluginBuilder builder = prepareBuilder("addKeyToWhitelist", splitName, environmentName, workspaceName, new String[] {""}, "", whitelistKey, treatmentName, "");
         project.getBuildersList().add(builder);
         FreeStyleBuild build = jenkins.buildAndAssertSuccess(project);
         jenkins.assertLogContains("Key ("+whitelistKey+") is added to ("+treatmentName+") Whitelist in Split (" + splitName[0] + ")", build);
     }
-
-    private void testKillSplit(String splitTask) throws Exception {
+        
+    private void testKillSplit() throws Exception {
         FreeStyleProject project = jenkins.createFreeStyleProject();
-        SplitPluginBuilder builder = prepareBuilder(splitTask, splitName, environmentName, workspaceName, new String[] {""}, "", "", "", "");
+        SplitPluginBuilder builder = prepareBuilder("killSplit", splitName, environmentName, workspaceName, new String[] {""}, "", "", "", "");
         project.getBuildersList().add(builder);
         FreeStyleBuild build = jenkins.buildAndAssertSuccess(project);
         jenkins.assertLogContains("Split (" + splitName[0] + ") is killed!", build);
     }
-
-    private void testDeleteSplitDefinition(String splitTask) throws Exception {
+        
+    private void testDeleteSplitDefinition() throws Exception {
          FreeStyleProject project = jenkins.createFreeStyleProject();
-         SplitPluginBuilder builder = prepareBuilder(splitTask, splitName, environmentName, workspaceName, new String[] {""}, "", "", "", "");
+         SplitPluginBuilder builder = prepareBuilder("deleteSplitDefinition", splitName, environmentName, workspaceName, new String[] {""}, "", "", "", "");
          project.getBuildersList().add(builder);
          FreeStyleBuild build = jenkins.buildAndAssertSuccess(project);
          jenkins.assertLogContains("Split (" + splitName[0] + ") definition is deleted", build);
     }
-    
-    private void testDeleteSplit(String splitTask) throws Exception {
+        
+    private void testDeleteSplit() throws Exception {
          FreeStyleProject project = jenkins.createFreeStyleProject();
-         SplitPluginBuilder builder = prepareBuilder(splitTask, splitName, new String[] {""}, workspaceName, new String[] {""}, "","","","");
+         SplitPluginBuilder builder = prepareBuilder("deleteSplit", splitName, new String[] {""}, workspaceName, new String[] {""}, "","","","");
          project.getBuildersList().add(builder);
          FreeStyleBuild build = jenkins.buildAndAssertSuccess(project);
          jenkins.assertLogContains("Split (" + splitName[0] + ") is deleted!", build);
     }
 
-    private void testCreateSplitFromYAML(String splitTask) throws Exception {
-        FreeStyleProject project = jenkins.createFreeStyleProject();
-        SplitPluginBuilder builder = prepareBuilder(splitTask, new String[] {""}, environmentName, workspaceName, trafficTypeName, "", "", "", splitYAMLFile);
-        project.getBuildersList().add(builder);
-        FreeStyleBuild build = jenkins.buildAndAssertSuccess(project);
-        jenkins.assertLogContains("Splits created successfully from (", build);
+    private SplitPluginBuilder prepareBuilder(String splitTask, String[] splitName, String[] environmentName, String[] workspaceName, String[] trafficTypeName, String splitDefinitions, String whitelistKey, String treatmentName, String splitYAMLFile) {
+        
+        SplitPluginBuilder tempBuilder = new SplitPluginBuilder(splitTask, splitName,  environmentName, workspaceName, trafficTypeName, splitDefinitions,  whitelistKey, treatmentName, splitYAMLFile);
+        tempBuilder.setApiKey(splitAdminApi);
+        tempBuilder.setAdminBaseURL(adminBaseURL);
+        return tempBuilder;
     }
     
     private SplitPluginBuilder prepareBuilder(String splitTask, String[] splitName, String[] environmentName, String[] workspaceName, String[] trafficTypeName, String splitDefinitions, String whitelistKey, String treatmentName, String splitYAMLFile) {

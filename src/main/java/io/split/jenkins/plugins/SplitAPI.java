@@ -21,11 +21,13 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import io.split.jenkins.plugins.Split;
-import io.split.jenkins.plugins.Treatments;
-import io.split.jenkins.plugins.YAMLParser;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.List;
 
 /**
 * Class wrapper for Split Admin API
@@ -40,6 +42,8 @@ public class SplitAPI {
     private String _apiKey = "";
     private String _adminBaseURL = "";
     private final int _httpError = -1;
+    private Map<String, String> _workspaces = new HashMap<>();
+    private Map<String, List<String>> _environments = new HashMap<>();
 
     SplitAPI(String adminApiKey, String adminBaseURL) {
         _apiKey = adminApiKey;
@@ -76,7 +80,9 @@ public class SplitAPI {
                 _log.error("Unexpected Error running " + httpRequest + "operation ", e);
             }
         }
-        checkStatus(httpResponse.statusCode);
+        if (!(httpRequest.equals("DeleteHTTP") && httpResponse.statusCode == 404)) {
+        	checkStatus(httpResponse.statusCode);
+        }
         return httpResponse;
     }
     
@@ -115,8 +121,9 @@ public class SplitAPI {
             }
             ((AbstractHttpMessage) httpAction).setHeaders(getHeaders());
 
-            if (httpVerb.equals("PostHTTP") || httpVerb.equals("PatchHTTP") || httpVerb.equals("PutHTTP"))
+            if (httpVerb.equals("PostHTTP") || httpVerb.equals("PatchHTTP") || httpVerb.equals("PutHTTP")) {            	
                 ((HttpEntityEnclosingRequestBase) httpAction).setEntity(new StringEntity(body));
+            }
 
             CloseableHttpResponse  response = httpclient.execute((HttpUriRequest) httpAction);
             HttpEntity entity = response.getEntity();
@@ -139,21 +146,27 @@ public class SplitAPI {
     
     public String getWorkspaceId(String workspaceName) {
         String wsId = "";
-        try {
-            String resp = execHTTPRequest("GetHTTP",_adminBaseURL + "/workspaces", null).response;
-            JSONParser parser = new JSONParser();
-            Object obj = parser.parse(resp);
-            JSONObject jsTemp = (JSONObject) obj;
-            JSONArray jsArray = (JSONArray) jsTemp.get("objects");
-            for (int ws = 0; ws < jsArray.size(); ws++) {
-                JSONObject jsItem = (JSONObject) jsArray.get(ws);
-                String temp = jsItem.get("name").toString();
-                if  (temp.equals(workspaceName)) {
-                    wsId = jsItem.get("id").toString();
-                }
-            }
-        } catch (Exception e) {
-            _log.error("Unexpected Error getting Workspace Id ", e);
+        if (_workspaces.containsKey(workspaceName)) {
+            _log.debug("Workspace:" + workspaceName + " found in cached list");
+        	wsId = _workspaces.get(workspaceName);
+        } else {
+	        try {
+	            String resp = execHTTPRequest("GetHTTP",_adminBaseURL + "/workspaces", null).response;
+	            JSONParser parser = new JSONParser();
+	            Object obj = parser.parse(resp);
+	            JSONObject jsTemp = (JSONObject) obj;
+	            JSONArray jsArray = (JSONArray) jsTemp.get("objects");
+	            for (int ws = 0; ws < jsArray.size(); ws++) {
+	                JSONObject jsItem = (JSONObject) jsArray.get(ws);
+	                String temp = jsItem.get("name").toString();
+	                addToWorkspacesMap(jsItem.get("name").toString(), jsItem.get("id").toString());
+	                if  (temp.equals(workspaceName)) {
+	                    wsId = jsItem.get("id").toString();
+	                }
+	            }
+	        } catch (Exception e) {
+	            _log.error("Unexpected Error getting Workspace Id ", e);
+	        }
         }
         return wsId;
     }
@@ -161,11 +174,10 @@ public class SplitAPI {
     public int createSplit(String workspaceId, String trafficTypeName, String splitName, String description) {
         int statusCode = _httpError;
         try {
-            if (!checkSplitExists(workspaceId, splitName)) {
-                String URL = _adminBaseURL + "/splits/ws/" + workspaceId + "/trafficTypes/" + trafficTypeName;
-                String data = "{\"name\":\"" + splitName + "\", \"description\": \"" + description + "\"}";
-                statusCode = execHTTPRequest("PostHTTP", URL, data).statusCode;
-            } else {
+            String URL = _adminBaseURL + "/splits/ws/" + workspaceId + "/trafficTypes/" + trafficTypeName;
+            String data = "{\"name\":\"" + splitName + "\", \"description\": \"" + description + "\"}";
+            statusCode = execHTTPRequest("PostHTTP", URL, data).statusCode;
+            if (statusCode == 409) {
                 _log.info("Split name:" + splitName + " already exist, skipping");
                 statusCode = 200;
             }
@@ -178,10 +190,9 @@ public class SplitAPI {
     public int addSplitToEnvironment(String workspaceId, String environmentName, String splitName, String definition) {
         int statusCode = _httpError;
         try {
-            if (!checkSplitDefinitionExists(workspaceId, environmentName, splitName)) {
-                String URL = _adminBaseURL + "/splits/ws/" + workspaceId + "/" + splitName + "/environments/" + environmentName;
-                statusCode = execHTTPRequest("PostHTTP", URL, definition).statusCode;
-            } else {
+            String URL = _adminBaseURL + "/splits/ws/" + workspaceId + "/" + splitName + "/environments/" + environmentName;
+            statusCode = execHTTPRequest("PostHTTP", URL, definition).statusCode;
+            if (statusCode == 409) {
                 _log.info("Split definition already exist, skipping");
                 statusCode = 200;
             }
@@ -205,12 +216,11 @@ public class SplitAPI {
     public int deleteSplit(String workspaceId, String splitName) {
         int statusCode = _httpError;
         try {
-            if (checkSplitExists(workspaceId, splitName)) {
-                String URL = _adminBaseURL + "/splits/ws/" + workspaceId + "/" + splitName;
-                statusCode = execHTTPRequest("DeleteHTTP", URL, null).statusCode;
-            } else {
+            String URL = _adminBaseURL + "/splits/ws/" + workspaceId + "/" + splitName;
+            statusCode = execHTTPRequest("DeleteHTTP", URL, null).statusCode;
+            if (statusCode == 404) {
                 _log.info("Split name:" + splitName + " does not exist, skipping");
-                return 200;
+                statusCode = 200;
             }
         } catch (Exception e) {
             _log.error("Unexpected Error deleting Split name:" + splitName, e);
@@ -303,25 +313,16 @@ public class SplitAPI {
                 _log.info("Working on Split name:" + splitName);
 
                 if (splitName == null) {
-                    throw new Exception("Split Name not found in YAML file in iteration " + i);
+                    throw new AssertionError("Split Name not found in YAML file in iteration " + i);
                 }
 
-                if (!checkSplitExists(workspaceId, splitName)) {
-                    createSplit(workspaceId, trafficTypeName, splitName, "Created form Jenkins plugin");
-                } else {
-                    _log.info("Split name:" + splitName + " already exists in workspace! Skipping.");
+                createSplit(workspaceId, trafficTypeName, splitName, "Created form Jenkins plugin");
+                
+                String splitDefinitions = YAMLParser.constructSplitDefinitions(split[i]);
+                if (_log.isDebugEnabled()) {
+                    _log.debug(splitDefinitions);
                 }
-
-                if (!checkSplitDefinitionExists(workspaceId, environmentName, splitName)) {
-
-                    String splitDefinitions = YAMLParser.constructSplitDefinitions(split[i]);
-
-                    if (_log.isDebugEnabled()) {
-                        _log.debug(splitDefinitions);
-                    }
-                    addSplitToEnvironment(workspaceId, environmentName, splitName, splitDefinitions);
-                } else _log.info("Split definitions for split name:" + splitName + " already exists in environment! Skipping.");
-
+                addSplitToEnvironment(workspaceId, environmentName, splitName, splitDefinitions);
             }
             statusCode = 200;
         } catch (Exception e) {
@@ -329,79 +330,12 @@ public class SplitAPI {
         }
         return statusCode;
     }
-
-    public String getSplitsList(String workspaceId) {
-        String splitList = "";
-        try {
-            splitList = execHTTPRequest("GetHTTP", _adminBaseURL + "/splits/ws/" + workspaceId, null).response;
-        } catch (Exception e) {
-            _log.error("Unexpected Error getting Split list ", e);
-        }
-        return splitList;
-    }
-
-    public String getSplitsInEnvironmentList(String workspaceId, String environmentName) {
-        String splitsInEnvironment = "";
-        try {
-            splitsInEnvironment = execHTTPRequest("GetHTTP", _adminBaseURL + "/splits/ws/" + workspaceId + "/environments/" + environmentName, null).response;
-        } catch (Exception e) {
-            _log.error("Unexpected Error getting Splits in Environment list ", e);
-        }
-        return splitsInEnvironment;
-    }
-
-    private boolean checkSplitExists(String workspaceId, String splitName) {
-        boolean splitExists = false;
-        try {
-            String resp = getSplitsList(workspaceId);
-            JSONParser parser = new JSONParser();
-            Object obj = parser.parse(resp);
-            JSONObject js = (JSONObject) obj;
-            JSONArray jsArray = (JSONArray)js.get("objects");
-            for (int ws = 0; ws < jsArray.size(); ws++) {
-                JSONObject jsItem = (JSONObject) jsArray.get(ws);
-                String temp = jsItem.get("name").toString();
-                if  (temp.equals(splitName)) {
-                    splitExists = true;
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            _log.error("Unexpected Error checking Split exists in workspace ", e);
-            // We prefer to error out on the side of caution and assume a Split exists in case
-            // of error to avoid overwriting any existing split at destination.
-            splitExists = true;
-        }
-        return splitExists;
-    }
-
-    private boolean checkSplitDefinitionExists(String workspaceId, String environmentName, String splitName) {
-        boolean splitDefinitionExist = false;
-        try {
-            String resp = getSplitsInEnvironmentList(workspaceId, environmentName);
-            JSONParser parser = new JSONParser();
-            Object obj = parser.parse(resp);
-            JSONObject js = (JSONObject) obj;
-            JSONArray jsArray = (JSONArray)js.get("objects");
-            for (int ws = 0; ws < jsArray.size(); ws++) {
-                JSONObject jsItem = (JSONObject) jsArray.get(ws);
-                String temp = jsItem.get("name").toString();
-                if  (temp.equals(splitName)) {
-                    splitDefinitionExist = true;
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            _log.error("Unexpected Error checking Split definition exist in Environment ", e);
-        }
-        return splitDefinitionExist;
-    }
-
+    
     @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(
     value = "UC_USELESS_CONDITION",
     justification = "statusCode can still be -1")
     private void checkStatus(int statusCode) {
-        if ((statusCode!=200 && statusCode!=302 && statusCode!=202) || statusCode==_httpError) {
+        if ((statusCode != 200 && statusCode != 302 && statusCode != 202 && statusCode != 409) || statusCode == _httpError) {
             throw new AssertionError("Admin API Call Failed with code " + Integer.toString(statusCode));
         }
     }
@@ -409,10 +343,14 @@ public class SplitAPI {
     public int deleteSplitDefinition(String workspaceId, String environmentName, String splitName) {
         int statusCode = _httpError;
         try {
-            if (checkSplitDefinitionExists(workspaceId, environmentName, splitName)) {
+            if (checkIfEnvironmentExist(workspaceId, environmentName)) {
                 String URL = _adminBaseURL + "/splits/ws/" + workspaceId + "/" + splitName + "/environments/" + environmentName;
                 statusCode = execHTTPRequest("DeleteHTTP", URL, null).statusCode;
             } else {
+                _log.error("Environment:" + environmentName + " does not exist");
+                throw new AssertionError("Environment:" + environmentName + " does not exist");
+            }
+            if (statusCode == 404) {
                 _log.info("Split Definition name:" + splitName + " does not exist, skipping");
                 statusCode = 200;
             }
@@ -421,6 +359,60 @@ public class SplitAPI {
         }
         return statusCode;
     }
+    
+    private void addToWorkspacesMap(String workspaceName, String workspaceId) {
+    	if (!_workspaces.containsKey(workspaceName)) {
+            _log.debug("Workspace:" + workspaceName + " added to cached list");
+    		_workspaces.put(workspaceName, workspaceId);
+    	}
+    }
+
+    private void addEnvironmentsPerWorkspaceToMap(String workspaceId) {
+        if (_environments.containsKey(workspaceId)) {
+            _log.debug("Workspace:" + workspaceId + " found in cached list");
+            return;
+        }
+        try {
+            List<String> environments = new ArrayList<String>();
+            String resp = execHTTPRequest("GetHTTP",_adminBaseURL + "/environments/ws/" + workspaceId, null).response;
+            JSONParser parser = new JSONParser();
+            Object obj = parser.parse(resp);
+            JSONArray jsArray = (JSONArray) obj;
+            for (int ws = 0; ws < jsArray.size(); ws++) {
+                JSONObject jsItem = (JSONObject) jsArray.get(ws);
+                environments.add(jsItem.get("name").toString());
+                _log.debug("Adding environment:" + jsItem.get("name").toString() + " for Workspace:" + workspaceId + " to cached list");
+
+            }
+            addToEnvironmentsMap(workspaceId, environments);
+        } catch (Exception e) {
+            _log.error("Unexpected Error getting environment list for Workspace Id:"+workspaceId, e);
+        }
+    }
+
+    private void addToEnvironmentsMap(String workspaceId, List<String> environments) {
+    	if (!_environments.containsKey(workspaceId)) {
+    		_environments.put(workspaceId, environments);
+    	}
+    }
+
+    public boolean checkIfEnvironmentExist(String workspaceId, String environmentName) {
+        boolean environmentExist = false;
+        if (_workspaces.containsValue(workspaceId)) {
+            if (!_environments.containsKey(workspaceId)) {
+        		addEnvironmentsPerWorkspaceToMap(workspaceId);
+        	}
+            List <String> workspaceEnvironments = _environments.get(workspaceId);
+            for (int i = 0; i < workspaceEnvironments.size(); i++) {
+                if (workspaceEnvironments.get(i).equals(environmentName)) {
+                	environmentExist = true;
+                    break;
+                }
+            }
+        }
+        return environmentExist;
+    }
+  
 }
 
 /**

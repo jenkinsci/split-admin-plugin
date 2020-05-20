@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.io.FileNotFoundException;
 
 /**
 * Class to parse Split information from YAML file
@@ -20,7 +21,7 @@ public class YAMLParser {
 
     private static Logger _log = Logger.getLogger(YAMLParser.class);
 
-    static Split[] readSplitsFromYAML(String YAMLFile) {
+    static Split[] readSplitsFromYAML(String YAMLFile) throws Exception {
         List<Split> splits = new ArrayList<Split>();
         try {
             Yaml yaml = new Yaml();
@@ -74,8 +75,12 @@ public class YAMLParser {
                     splits.add(split);
                 }
             }
-        } catch (IOException e) {
+        } catch (RuntimeException e) {
             _log.error("Unexpected Error reading Splits from Yaml ", e);
+            throw new AssertionError("Exception reading YAML file:" + YAMLFile + ", " + e);
+        } catch (Exception e) {
+            _log.error("Unexpected Error Caught ", e);
+            throw new AssertionError("Unexpected Error Caught " + e);
         }
 
         return splits.toArray(new Split[0]);
