@@ -111,7 +111,15 @@ public class SplitPluginBuilderTest {
          FreeStyleBuild build = jenkins.buildAndAssertSuccess(project);
          jenkins.assertLogContains("Split (" + splitName[0] + ") is deleted!", build);
     }
-            
+
+    private SplitPluginBuilder prepareBuilder(String splitTask, String[] splitName, String[] environmentName, String[] workspaceName, String[] trafficTypeName, String splitDefinitions, String whitelistKey, String treatmentName, String splitYAMLFile) {
+        
+        SplitPluginBuilder tempBuilder = new SplitPluginBuilder(splitTask, splitName,  environmentName, workspaceName, trafficTypeName, splitDefinitions,  whitelistKey, treatmentName, splitYAMLFile);
+        tempBuilder.setApiKey(splitAdminApi);
+        tempBuilder.setAdminBaseURL(adminBaseURL);
+        return tempBuilder;
+    }
+    
     private SplitPluginBuilder prepareBuilder(String splitTask, String[] splitName, String[] environmentName, String[] workspaceName, String[] trafficTypeName, String splitDefinitions, String whitelistKey, String treatmentName, String splitYAMLFile) {
         
         SplitPluginBuilder tempBuilder = new SplitPluginBuilder(splitTask, splitName,  environmentName, workspaceName, trafficTypeName, splitDefinitions,  whitelistKey, treatmentName, splitYAMLFile);
