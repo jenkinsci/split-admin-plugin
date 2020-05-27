@@ -119,12 +119,5 @@ public class SplitPluginBuilderTest {
         tempBuilder.setAdminBaseURL(adminBaseURL);
         return tempBuilder;
     }
-    
-    private SplitPluginBuilder prepareBuilder(String splitTask, String[] splitName, String[] environmentName, String[] workspaceName, String[] trafficTypeName, String splitDefinitions, String whitelistKey, String treatmentName, String splitYAMLFile) {
-        
-        SplitPluginBuilder tempBuilder = new SplitPluginBuilder(splitTask, splitName,  environmentName, workspaceName, trafficTypeName, splitDefinitions,  whitelistKey, treatmentName, splitYAMLFile);
-        tempBuilder.setApiKey(splitAdminApi);
-        tempBuilder.setAdminBaseURL(adminBaseURL);
-        return tempBuilder;
-    }
+
 }
