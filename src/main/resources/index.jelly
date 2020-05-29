@@ -1,4 +1,4 @@
 <?jelly escape-by-default='true'?>
 <div>
-    TODO
+This plugin uses Split Admin REST API to allow creating, updating and deleting Splits as part of Test automation and build workflow.
 </div>

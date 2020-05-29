@@ -397,7 +397,7 @@ public class SplitAPI {
     		_environments.put(workspaceId, environments);
     	}
     }
-    
+
     public boolean checkIfEnvironmentExist(String workspaceId, String environmentName) {
         boolean environmentExist = false;
         if (_workspaces.containsValue(workspaceId)) {

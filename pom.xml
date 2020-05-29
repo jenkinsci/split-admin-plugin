@@ -21,7 +21,7 @@
           ~ stapler-plugin.version: The Stapler Maven plugin version required by the plugin.
      -->
     </properties>
-    <name>Split Admin plugin for Jenkins</name>
+    <name>Split Admin plugin</name>
     <description>plugin that uses Split Admin REST API to allow creating,  updating and deleting Splits as part of Test automation and build workflow.</description>
     <!-- The default licence for Jenkins OSS Plugins is MIT. Substitute for the applicable one if needed. -->
     <licenses>
