@@ -5,6 +5,7 @@ import hudson.Launcher;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.util.FormValidation;
+import hudson.util.Secret;
 import hudson.model.AbstractProject;
 import hudson.model.Run;
 import hudson.model.TaskListener;
@@ -37,7 +38,7 @@ public class SplitPluginBuilder extends Builder implements SimpleBuildStep {
     private final String treatmentName;
     private final String whitelistKey;
     private final String splitYAMLFile;
-    private String apiKey;
+    private Secret apiKey;
     private String adminBaseURL;
     private static Logger _log = Logger.getLogger(SplitAPI.class);
     private String splitYAMLFileFullPath = "";
@@ -135,7 +136,7 @@ public class SplitPluginBuilder extends Builder implements SimpleBuildStep {
         return splitTask;
     }
 
-    public void setApiKey(String splitApiKey) {
+    public void setApiKey(Secret splitApiKey) {
         this.apiKey = splitApiKey;
     }
 
@@ -154,7 +155,7 @@ public class SplitPluginBuilder extends Builder implements SimpleBuildStep {
         }
         _log.info("Selected Task: " + splitTask);
         listener.getLogger().println("Selected Task: " + splitTask);
-        if (this.apiKey.equals("")) {
+        if (this.apiKey.equals(Secret.fromString(""))) {
             this.apiKey = DescriptorImpl.getSplitAdminApiKey();
         }
         if (this.adminBaseURL.equals("")) {
@@ -204,18 +205,18 @@ public class SplitPluginBuilder extends Builder implements SimpleBuildStep {
 
     }
     
-    @Symbol("greet")
+    @Symbol("split")
     @Extension
     public static final class DescriptorImpl extends BuildStepDescriptor<Builder> {
-        static String splitAdminApiKey = "";
+        static Secret splitAdminApiKey = Secret.fromString("");
         static String splitAdminBaseURL = "https://api.split.io/internal/api/v2";
 
-        public static String getSplitAdminApiKey() {
+        public static Secret getSplitAdminApiKey() {
             return splitAdminApiKey;
         }
         
         public static void setSplitAdminApiKey(String splitApiKey) {
-            splitAdminApiKey = splitApiKey;
+            splitAdminApiKey = Secret.fromString(splitApiKey);
         }
         
         public static String getAdminBaseURL() {
