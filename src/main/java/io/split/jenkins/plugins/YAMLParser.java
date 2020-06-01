@@ -2,6 +2,7 @@ package io.split.jenkins.plugins;
 
 import org.apache.log4j.Logger;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.SafeConstructor;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -24,7 +25,7 @@ public class YAMLParser {
     static Split[] readSplitsFromYAML(String YAMLFile) throws Exception {
         List<Split> splits = new ArrayList<Split>();
         try {
-            Yaml yaml = new Yaml();
+            Yaml yaml = new Yaml(new SafeConstructor());
             List<Map<String, HashMap<String, Object>>> yamlSplits = yaml.load(new InputStreamReader(new FileInputStream(YAMLFile), "UTF-8"));
             for (Map<String, HashMap<String, Object>> aSplit : yamlSplits) {
                 // The outter map is a map with one key, the split name

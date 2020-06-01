@@ -3,6 +3,7 @@ package io.split.jenkins.plugins;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import hudson.model.Label;
+import hudson.util.Secret;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
@@ -21,7 +22,7 @@ public class SplitPluginBuilderTest {
     @Rule
     public JenkinsRule jenkins = new JenkinsRule();
     final String adminBaseURL = "https://api.split.io/internal/api/v2";
-    final String splitAdminApi = "ADMIN API KEY";
+    String splitAdminApi = "";
     final String[] splitName = new String[] {"SplitPlugin_Jenkins_Test",  "SplitPlugin_Jenkins_Test", "SplitPlugin_Jenkins_Test",  "SplitPlugin_Jenkins_Test", "SplitPlugin_Jenkins_Test",  "SplitPlugin_Jenkins_Test"};
     final String[] workspaceName = new String[] {"Default", "Default", "Default", "Default", "Default", "Default", "Default"};
     final String[] environmentName = new String[] {"Production", "Production", "Production", "Production", "Production"};
@@ -115,7 +116,7 @@ public class SplitPluginBuilderTest {
     private SplitPluginBuilder prepareBuilder(String splitTask, String[] splitName, String[] environmentName, String[] workspaceName, String[] trafficTypeName, String splitDefinitions, String whitelistKey, String treatmentName, String splitYAMLFile) {
         
         SplitPluginBuilder tempBuilder = new SplitPluginBuilder(splitTask, splitName,  environmentName, workspaceName, trafficTypeName, splitDefinitions,  whitelistKey, treatmentName, splitYAMLFile);
-        tempBuilder.setApiKey(splitAdminApi);
+        tempBuilder.setApiKey(Secret.fromString(splitAdminApi));
         tempBuilder.setAdminBaseURL(adminBaseURL);
         return tempBuilder;
     }

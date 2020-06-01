@@ -21,6 +21,7 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import hudson.util.Secret;
 
 import java.io.IOException;
 import java.lang.reflect.Array;
@@ -28,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
+
 
 /**
 * Class wrapper for Split Admin API
@@ -39,13 +41,13 @@ public class SplitAPI {
 
     private static Logger _log = Logger.getLogger(SplitAPI.class);
 
-    private String _apiKey = "";
+    private Secret _apiKey = Secret.fromString("");
     private String _adminBaseURL = "";
     private final int _httpError = -1;
     private Map<String, String> _workspaces = new HashMap<>();
     private Map<String, List<String>> _environments = new HashMap<>();
 
-    SplitAPI(String adminApiKey, String adminBaseURL) {
+    SplitAPI(Secret adminApiKey, String adminBaseURL) {
         _apiKey = adminApiKey;
         _adminBaseURL = adminBaseURL;
     }
@@ -89,7 +91,7 @@ public class SplitAPI {
     private Header[] getHeaders() {
         Header[] headers = {
                 new BasicHeader("Content-type" , "application/json"),
-                new BasicHeader("Authorization", "Bearer " + _apiKey)
+            new BasicHeader("Authorization", "Bearer " + Secret.toString(_apiKey))
         };
         return headers;
     }
