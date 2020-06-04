@@ -8,7 +8,7 @@
         <relativePath />
     </parent>
     <groupId>io.split.jenkins.plugins</groupId>
-    <artifactId>split-admin</artifactId>
+    <artifactId>split-admin-plugin</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>hpi</packaging>
     <properties>
