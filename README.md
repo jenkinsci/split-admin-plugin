@@ -106,12 +106,12 @@ The Split Definitions field should match the JSON structure accepted by Split Ad
 ```yaml
 - correct_data_split:
     treatment: "on"
-    config: "this applies only to ON treatment"
+    config: "{\\\"desc\\\" : \\\"this applies only to ON treatment\\\"}"
     percentage: "50"
 - correct_data_split:
     treatment: "off"
     keys: ["key1", "key2"]
-    config: "this applies only to OFF treatment"
+    config: "{\\\"desc\\\" : \\\"this applies only to OFF treatment\\\"}"
 ```
  * Split below only has the name, no other information is given, the plugin will add "on" and "off" treatments, and set default rule to "off" with 100%
 ```yaml
