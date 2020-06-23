@@ -6,6 +6,7 @@ Reference to Split Admin API can be found [here](https://docs.split.io/reference
 
 ## Installation
 In Jenkins Plugin Manager page, under "Available" tab, type "Split Admin" to find the plugin and install it.
+![MAnage Plugins](images/img3.png?token=AJY6664VJRRJKKIJXVCHYA26T5P24)
 
 ## How to Use
 
