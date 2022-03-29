@@ -22,14 +22,14 @@ public class SplitPluginBuilderTest {
     @Rule
     public JenkinsRule jenkins = new JenkinsRule();
     final String adminBaseURL = "https://api.split.io/internal/api/v2";
-    String splitAdminApi = "";
+    String splitAdminApi = "9enig1pcv629481bjme33o4dn0kg26n7m6d9";
     final String[] splitName = new String[] {"SplitPlugin_Jenkins_Test",  "SplitPlugin_Jenkins_Test", "SplitPlugin_Jenkins_Test",  "SplitPlugin_Jenkins_Test", "SplitPlugin_Jenkins_Test",  "SplitPlugin_Jenkins_Test"};
     final String[] workspaceName = new String[] {"Default", "Default", "Default", "Default", "Default", "Default", "Default"};
     final String[] environmentName = new String[] {"Production", "Production", "Production", "Production", "Production"};
     final String[] trafficTypeName = new String[] {"user", "user"};
     final String splitDefinitions = "{\"treatments\":[{\"name\": \"premium\", \"description\": \"\"}, { \"name\": \"standard\", \"description\": \"\"}, { \"name\": \"current\", \"description\": \"\"}],\"defaultTreatment\":\"current\",\"rules\":[], \"defaultRule\":[{\"treatment\": \"current\", \"size\": 100}]}";
     final String treatmentName = "premium";
-    final String whitelistKey = "bob";
+    final String targetlistKey = "bob";
     final String splitYAMLFile = "/Users/bilalal-shahwany/Desktop/Projects/Java/SplitJenkins/split-plugin/src/test/java/io/split/jenkins/plugins/splits.yaml";
 
     private boolean checkAdminAPI() {
@@ -58,7 +58,7 @@ public class SplitPluginBuilderTest {
         if (checkAdminAPI()) {
             testCreateSplit();
             testAddToEnvironment();
-            testAddToWhitelist();
+            testAddToTargetlist();
             testKillSplit();
             testDeleteSplitDefinition();
             testDeleteSplit();
@@ -81,12 +81,12 @@ public class SplitPluginBuilderTest {
         jenkins.assertLogContains("Split (" + splitName[0] + ") is added to ("+environmentName[0]+") Environment!", build);
     }
     
-    private void testAddToWhitelist() throws Exception {
+    private void testAddToTargetlist() throws Exception {
         FreeStyleProject project = jenkins.createFreeStyleProject();
-        SplitPluginBuilder builder = prepareBuilder("addKeyToWhitelist", splitName, environmentName, workspaceName, new String[] {""}, "", whitelistKey, treatmentName, "");
+        SplitPluginBuilder builder = prepareBuilder("addKeyToTargetlist", splitName, environmentName, workspaceName, new String[] {""}, "", targetlistKey, treatmentName, "");
         project.getBuildersList().add(builder);
         FreeStyleBuild build = jenkins.buildAndAssertSuccess(project);
-        jenkins.assertLogContains("Key ("+whitelistKey+") is added to ("+treatmentName+") Whitelist in Split (" + splitName[0] + ")", build);
+        jenkins.assertLogContains("Key ("+targetlistKey+") is added to ("+treatmentName+") Targetlist in Split (" + splitName[0] + ")", build);
     }
         
     private void testKillSplit() throws Exception {
@@ -112,13 +112,12 @@ public class SplitPluginBuilderTest {
          FreeStyleBuild build = jenkins.buildAndAssertSuccess(project);
          jenkins.assertLogContains("Split (" + splitName[0] + ") is deleted!", build);
     }
-
-    private SplitPluginBuilder prepareBuilder(String splitTask, String[] splitName, String[] environmentName, String[] workspaceName, String[] trafficTypeName, String splitDefinitions, String whitelistKey, String treatmentName, String splitYAMLFile) {
+            
+    private SplitPluginBuilder prepareBuilder(String splitTask, String[] splitName, String[] environmentName, String[] workspaceName, String[] trafficTypeName, String splitDefinitions, String targetlistKey, String treatmentName, String splitYAMLFile) {
         
-        SplitPluginBuilder tempBuilder = new SplitPluginBuilder(splitTask, splitName,  environmentName, workspaceName, trafficTypeName, splitDefinitions,  whitelistKey, treatmentName, splitYAMLFile);
+        SplitPluginBuilder tempBuilder = new SplitPluginBuilder(splitTask, splitName,  environmentName, workspaceName, trafficTypeName, splitDefinitions,  targetlistKey, treatmentName, splitYAMLFile);
         tempBuilder.setApiKey(Secret.fromString(splitAdminApi));
         tempBuilder.setAdminBaseURL(adminBaseURL);
         return tempBuilder;
     }
-
 }
