@@ -22,7 +22,7 @@ public class SplitPluginBuilderTest {
     @Rule
     public JenkinsRule jenkins = new JenkinsRule();
     final String adminBaseURL = "https://api.split.io/internal/api/v2";
-    String splitAdminApi = "9enig1pcv629481bjme33o4dn0kg26n7m6d9";
+    String splitAdminApi = "";
     final String[] splitName = new String[] {"SplitPlugin_Jenkins_Test",  "SplitPlugin_Jenkins_Test", "SplitPlugin_Jenkins_Test",  "SplitPlugin_Jenkins_Test", "SplitPlugin_Jenkins_Test",  "SplitPlugin_Jenkins_Test"};
     final String[] workspaceName = new String[] {"Default", "Default", "Default", "Default", "Default", "Default", "Default"};
     final String[] environmentName = new String[] {"Production", "Production", "Production", "Production", "Production"};
