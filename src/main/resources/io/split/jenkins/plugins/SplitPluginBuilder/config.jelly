@@ -45,7 +45,7 @@
     </f:entry>
    </f:radioBlock>
 
-   <f:radioBlock name="splitTask" value="addKeyToWhitelist" title="${%Add Key To Whitelist}" checked="${instance.splitTask.equals('addKeyToWhitelist')? 'true':''}" inline="true">
+   <f:radioBlock name="splitTask" value="addKeyToTargetlist" title="${%Add Key To Targetlist}" checked="${instance.splitTask.equals('addKeyToTargetlist')? 'true':''}" inline="true">
     <f:entry title="Workspace Name" field="workspaceName">
         <f:textbox/>
     </f:entry>
@@ -58,7 +58,7 @@
     <f:entry title="Treatment Name" field="treatmentName">
         <f:textbox />
     </f:entry>
-    <f:entry title="Whitelist Key" field="whitelistKey">
+    <f:entry title="Targetlist Key" field="targetlistKey">
         <f:textbox />
     </f:entry>
    </f:radioBlock>
