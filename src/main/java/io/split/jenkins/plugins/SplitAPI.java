@@ -230,24 +230,25 @@ public class SplitAPI {
         return statusCode;
     }
 
-    
-    public int addWhiteListToSplit(String workspaceId, String environmentName, String splitName, String treatmentName, String whitelistKey) {
+    public int addTargetListToSplit(String workspaceId, String environmentName, String splitName, String treatmentName, String targetlistKey) {
         int statusCode = _httpError;
         try {
             String patchData = "";
             int treatmentOrder = getTreatmentOrder(workspaceId, environmentName, splitName, treatmentName);
-            if (checkWhitelistSectionExist(workspaceId, environmentName, splitName, treatmentName))
-                patchData = "[{\"op\": \"add\", \"path\": \"/treatments/" + treatmentOrder + "/keys/-\", \"value\": \"" + whitelistKey + "\"}]";
+            if (checkTargetlistSectionExist(workspaceId, environmentName, splitName, treatmentName))
+                patchData = "[{\"op\": \"add\", \"path\": \"/treatments/" + treatmentOrder + "/keys/-\", \"value\": \"" + targetlistKey + "\"}]";
             else
-                patchData="[{\"op\": \"add\", \"path\": \"/treatments/" + treatmentOrder + "/keys\", \"value\": [\"" + whitelistKey + "\"]}]";
+                patchData="[{\"op\": \"add\", \"path\": \"/treatments/" + treatmentOrder + "/keys\", \"value\": [\"" + targetlistKey + "\"]}]";
             String URL = _adminBaseURL + "/splits/ws/" + workspaceId + "/" + splitName + "/environments/" + environmentName;
             statusCode =  execHTTPRequest("PatchHTTP", URL, patchData).statusCode;
         } catch (Exception e) {
-            _log.error("Unexpected Error adding Whitelist to Split name:" + splitName, e);
+            _log.error("Unexpected Error adding Targetlist to Split name:" + splitName, e);
         }
         return statusCode;
     }
 
+
+    
     private int getTreatmentOrder(String workspaceId, String environmentName, String splitName, String treatmentName) {
         int treatmentOrder = 0;
         try {
@@ -272,8 +273,8 @@ public class SplitAPI {
         return treatmentOrder;
     }
     
-    private boolean checkWhitelistSectionExist(String workspaceId, String environmentName, String splitName, String treatmentName) {
-        boolean whiteListSectionExist = false;
+    private boolean checkTargetlistSectionExist(String workspaceId, String environmentName, String splitName, String treatmentName) {
+        boolean targetListSectionExist = false;
         try {
             String resp = getSplitDefinition(workspaceId, splitName, environmentName);
             JSONParser parser = new JSONParser();
@@ -284,17 +285,18 @@ public class SplitAPI {
                 JSONObject jsItem = (JSONObject) jsArray.get(ws);
                 if (treatmentName.equals(jsItem.get("name").toString())) {
                     if (jsItem.containsKey("keys")) {
-                        whiteListSectionExist = true;
+                        targetListSectionExist = true;
                     }
                     break;
                 }
             }
         } catch (Exception e) {
-            _log.error("Unexpected Error checking whitelist section exists ", e);
+            _log.error("Unexpected Error checking targetlist section exists ", e);
         }
-        return whiteListSectionExist;
+        return targetListSectionExist;
     }
 
+    
     public String getSplitDefinition(String workspaceId, String splitName, String environmentName) {
         String splitDefinition = "";
         try {
@@ -397,7 +399,7 @@ public class SplitAPI {
     		_environments.put(workspaceId, environments);
     	}
     }
-
+    
     public boolean checkIfEnvironmentExist(String workspaceId, String environmentName) {
         boolean environmentExist = false;
         if (_workspaces.containsValue(workspaceId)) {

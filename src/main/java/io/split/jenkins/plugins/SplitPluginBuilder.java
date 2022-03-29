@@ -36,7 +36,7 @@ public class SplitPluginBuilder extends Builder implements SimpleBuildStep {
     private final String[] trafficTypeName;
     private final String splitDefinitions;
     private final String treatmentName;
-    private final String whitelistKey;
+    private final String targetlistKey;
     private final String splitYAMLFile;
     private Secret apiKey;
     private String adminBaseURL;
@@ -44,14 +44,14 @@ public class SplitPluginBuilder extends Builder implements SimpleBuildStep {
     private String splitYAMLFileFullPath = "";
 
     @DataBoundConstructor
-    public SplitPluginBuilder(String splitTask, String[] splitName, String[] environmentName, String[] workspaceName, String[] trafficTypeName, String splitDefinitions, String whitelistKey, String treatmentName, String splitYAMLFile) {
+    public SplitPluginBuilder(String splitTask, String[] splitName, String[] environmentName, String[] workspaceName, String[] trafficTypeName, String splitDefinitions, String targetlistKey, String treatmentName, String splitYAMLFile) {
         
         this.splitName = splitName.clone();
         this.environmentName = environmentName.clone();
         this.workspaceName = workspaceName.clone();
         this.trafficTypeName = trafficTypeName.clone();
         this.splitDefinitions = splitDefinitions;
-        this.whitelistKey = whitelistKey;
+        this.targetlistKey = targetlistKey;
         this.treatmentName = treatmentName;
         this.splitTask = splitTask;
         this.splitYAMLFile = splitYAMLFile;
@@ -63,7 +63,7 @@ public class SplitPluginBuilder extends Builder implements SimpleBuildStep {
         int index = 0;
         if (splitTask.equals("createSplit")) index = 0;
         if (splitTask.equals("addToEnvironment")) index = 1;
-        if (splitTask.equals("addKeyToWhitelist")) index = 2;
+        if (splitTask.equals("addKeyToTargetlist")) index = 2;
         if (splitTask.equals("killSplit")) index = 3;
         if (splitTask.equals("deleteSplitDefinition")) index = 4;
         if (splitTask.equals("deleteSplit")) index = 5;
@@ -75,7 +75,7 @@ public class SplitPluginBuilder extends Builder implements SimpleBuildStep {
         if (splitTask.equals("createSplitFromYAML")) index = 0;
         if (splitTask.equals("createSplit")) index = 1;
         if (splitTask.equals("addToEnvironment")) index = 2;
-        if (splitTask.equals("addKeyToWhitelist")) index = 3;
+        if (splitTask.equals("addKeyToTargetlist")) index = 3;
         if (splitTask.equals("killSplit")) index = 4;
         if (splitTask.equals("deleteSplitDefinition")) index = 5;
         if (splitTask.equals("deleteSplit")) index = 6;
@@ -86,7 +86,7 @@ public class SplitPluginBuilder extends Builder implements SimpleBuildStep {
         int index = 0;
         if (splitTask.equals("createSplitFromYAML")) index = 0;
         if (splitTask.equals("addToEnvironment")) index = 1;
-        if (splitTask.equals("addKeyToWhitelist")) index = 2;
+        if (splitTask.equals("addKeyToTargetlist")) index = 2;
         if (splitTask.equals("killSplit")) index = 3;
         if (splitTask.equals("deleteSplitDefinition")) index = 4;
         return index;
@@ -111,9 +111,9 @@ public class SplitPluginBuilder extends Builder implements SimpleBuildStep {
     public String getTreatmentName() {
         return treatmentName;
     }
-    
-    public String getWhitelistKey() {
-        return whitelistKey;
+        
+    public String getTargetlistKey() {
+        return targetlistKey;
     }
     
     public String getSplitDefinitions() {
@@ -186,10 +186,10 @@ public class SplitPluginBuilder extends Builder implements SimpleBuildStep {
             listener.getLogger().println("Returned Status Code: " + statusCode.toString());
             listener.getLogger().println("Split (" + splitName[getSplitNameIndex(splitTask)] + ") is killed!");
         }
-        if (splitTask.equals("addKeyToWhitelist")) {
-            statusCode=spAdmin.addWhiteListToSplit(workspaceId, environmentName[getEnvironmentIndex(splitTask)], splitName[getSplitNameIndex(splitTask)],  treatmentName, whitelistKey);
+        if (splitTask.equals("addKeyToTargetlist")) {
+            statusCode=spAdmin.addTargetListToSplit(workspaceId, environmentName[getEnvironmentIndex(splitTask)], splitName[getSplitNameIndex(splitTask)],  treatmentName, targetlistKey);
             listener.getLogger().println("Returned Status Code: " + statusCode.toString());
-            listener.getLogger().println("Key (" + whitelistKey + ") is added to ("+treatmentName+") Whitelist in Split (" + splitName[getSplitNameIndex(splitTask)] + ")");
+            listener.getLogger().println("Key (" + targetlistKey + ") is added to ("+treatmentName+") Targetlist in Split (" + splitName[getSplitNameIndex(splitTask)] + ")");
         }
         if (splitTask.equals("deleteSplit")) {
             statusCode=spAdmin.deleteSplit(workspaceId, splitName[getSplitNameIndex(splitTask)]);
