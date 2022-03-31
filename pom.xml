@@ -4,12 +4,12 @@
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>3.50</version>
+        <version>4.31</version>
         <relativePath />
     </parent>
     <groupId>io.split.jenkins.plugins</groupId>
     <artifactId>split-admin</artifactId>
-    <version>1.0.1</version>
+    <version>1.1</version>
     <packaging>hpi</packaging>
     <properties>
         <!-- Baseline Jenkins version you use to build the plugin. Users must have this version 2.164.3 or newer to run. -->
