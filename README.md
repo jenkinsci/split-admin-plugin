@@ -30,7 +30,7 @@ io.split.jenkins.plugins
 
 ## Supported Tasks
 
- * **Create Split From YAML File**: This task will read a given YAML file populated with Splits containing treatments, whitelisted keys, dynamic configs and percentages for default rule, see YAML format section below. The plugin will check if Split and Split definitions exists in the given workspace/environment, if not, the subtask is skipped, the fields below are required:
+ * **Create Split From YAML File**: This task will read a given YAML file populated with Splits containing treatments, individual target keys, dynamic configs and percentages for default rule, see YAML format section below. The plugin will check if Split and Split definitions exists in the given workspace/environment, if not, the subtask is skipped, the fields below are required:
     `Workspace Name`
     `Environment Name`
     `Traffic Type Name`
@@ -48,12 +48,12 @@ io.split.jenkins.plugins
     `Split Definitions`
 The Split Definitions field should match the JSON structure accepted by Split Admin API, see the [API reference](https://docs.split.io/reference#create-split-definition-in-environment) for more info.
 
- * **Add Key To Whitelist**: This task will add new key to a treatment's whitelist section of an existing Split definitions, the fields below are required:
+ * **Add Key To Targetlist**: This task will add new key to a treatment's targetlist section of an existing Split definitions, the fields below are required:
     `Workspace Name`
     `Environment Name`
     `Split Name`
     `Treatment Name`
-    `Whitelist Key`
+    `Targetlist Key`
     
  * **Kill Split**: This task will perform "Kill" action on a given Split in an Environment,  the fields below are required:
     `Workspace Name`
@@ -79,7 +79,7 @@ The Split Definitions field should match the JSON structure accepted by Split Ad
 
 ### Examples
 
- * Split below has 3 treatments (on/off/unallocated), only "on" treatment contains whitelisted id "key1". For default rule, "on" is set to 80%, "off" is set to 10%, the plugin will assign the last 10% to "unallocated" treatment. 
+ * Split below has 3 treatments (on/off/unallocated), only "on" treatment contains targetlisted id "key1". For default rule, "on" is set to 80%, "off" is set to 10%, the plugin will assign the last 10% to "unallocated" treatment. 
 ```yaml
 - percentage_less_100_split:
     treatment: "on"
@@ -103,7 +103,7 @@ The Split Definitions field should match the JSON structure accepted by Split Ad
 - one_treatment_split:
     treatment: "one"
 ```    
- * Split below has two treatments with their dynamic configs, treatment "off" has two keys in whitelist section, default rule has only "on" treatment set to 50%, the plugin will add "off" with 50%.
+ * Split below has two treatments with their dynamic configs, treatment "off" has two keys in targetlist section, default rule has only "on" treatment set to 50%, the plugin will add "off" with 50%.
 ```yaml
 - correct_data_split:
     treatment: "on"
