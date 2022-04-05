@@ -8,6 +8,17 @@ Reference to Split Admin API can be found [here](https://docs.split.io/reference
 In Jenkins Plugin Manager page, under "Available" tab, type "Split Admin" to find the plugin and install it.
 ![MAnage Plugins](images/img3.png?token=AJY6664VJRRJKKIJXVCHYA26T5P24)
 
+## Breaking Change for Version 1.1
+
+The Whitelist terminology is renamed to Targetlist, this will impact existing task.
+If you already have Version 1.0 installed, before upgrading to the new version, please do the following:
+1. Check all the Jobs that use Split Admin task: AddKeyToWhiteList
+2. Write down the details for each "AddKeyToWhiteList" task (workspace, environment, split, treatment and key values)
+3. Delete the "AddKeyToWhiteList" task and save the job
+4. Upgrade the Split Admin plugin
+5. Open the jobs and re-add the task "AddKeyToTargetList" with the previous variables values. 
+
+
 ## How to Use
 
 1. Store the Split Admin API Key in "Split Admin API Key" edit box found in "Manage Jenkins->Configure System" page
