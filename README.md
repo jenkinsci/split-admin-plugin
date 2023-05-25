@@ -1,7 +1,7 @@
 
 # Split Jenkins Plugin
 
-Jenkins plugin that uses Split Admin REST API to allow creating,  updating and deleting Splits as part of Test automation and build workflow.
+Jenkins plugin that uses Split Admin REST API to allow creating,  updating and deleting Feautre flags as part of Test automation and build workflow.
 Reference to Split Admin API can be found [here](https://docs.split.io/reference)
 
 ## Installation
@@ -13,7 +13,7 @@ In Jenkins Plugin Manager page, under "Available" tab, type "Split Admin" to fin
 The Whitelist terminology is renamed to Targetlist, this will impact existing task.
 If you already have Version 1.0 installed, before upgrading to the new version, please do the following:
 1. Check all the Jobs that use Split Admin task: AddKeyToWhiteList
-2. Write down the details for each "AddKeyToWhiteList" task (workspace, environment, split, treatment and key values)
+2. Write down the details for each "AddKeyToWhiteList" task (workspace, environment, feature flag, treatment and key values)
 3. Delete the "AddKeyToWhiteList" task and save the job
 4. Upgrade the Split Admin plugin
 5. Open the jobs and re-add the task "AddKeyToTargetList" with the previous variables values. 
@@ -41,48 +41,48 @@ io.split.jenkins.plugins
 
 ## Supported Tasks
 
- * **Create Split From YAML File**: This task will read a given YAML file populated with Splits containing treatments, individual target keys, dynamic configs and percentages for default rule, see YAML format section below. The plugin will check if Split and Split definitions exists in the given workspace/environment, if not, the subtask is skipped, the fields below are required:
+ * **Create Feature flag From YAML File**: This task will read a given YAML file populated with Feature flags containing treatments, individual target keys, dynamic configs and percentages for default rule, see YAML format section below. The plugin will check if Feature flag and Feature flag definitions exists in the given workspace/environment, if not, the subtask is skipped, the fields below are required:
     `Workspace Name`
     `Environment Name`
     `Traffic Type Name`
-<p class="callout info">If there are missing fields for Splits in YAML file, the plugin will attempt to complete the definitions automatically, see examples in YAML format section.</p>
+<p class="callout info">If there are missing fields for Feature flags in YAML file, the plugin will attempt to complete the definitions automatically, see examples in YAML format section.</p>
 
- * **Create Split**: This task will create a new Split, the fields below are required, the plugin will check if Split does not exist in the given workspace, if it exist, the task is skipped, no errors returned: 
+ * **Create Feature flag**: This task will create a new Feature flag, the fields below are required, the plugin will check if Feature flag does not exist in the given workspace, if it exist, the task is skipped, no errors returned: 
     `Workspace Name`
-    `Split Name`
+    `Feature flag Name`
     `Traffic Type Name`
     
- * **Add Split To Environment**: This task will add new definitions for an existing Split to an Environment, the fields below are required, the plugin will check if Split definitions does not exist in the given environment, if it exist, the task is skipped, no errors returned:  
+ * **Add Feature flag To Environment**: This task will add new definitions for an existing Feature flag to an Environment, the fields below are required, the plugin will check if Feature flag definitions does not exist in the given environment, if it exist, the task is skipped, no errors returned:  
     `Workspace Name`
     `Environment Name`
-    `Split Name`
-    `Split Definitions`
-The Split Definitions field should match the JSON structure accepted by Split Admin API, see the [API reference](https://docs.split.io/reference#create-split-definition-in-environment) for more info.
+    `Feature flag Name`
+    `Feature flag Definitions`
+The Feature flag Definitions field should match the JSON structure accepted by Split Admin API, see the [API reference](https://docs.split.io/reference#create-split-definition-in-environment) for more info.
 
- * **Add Key To Targetlist**: This task will add new key to a treatment's targetlist section of an existing Split definitions, the fields below are required:
+ * **Add Key To Targetlist**: This task will add new key to a treatment's targetlist section of an existing Feature flag definitions, the fields below are required:
     `Workspace Name`
     `Environment Name`
-    `Split Name`
+    `Feature flag Name`
     `Treatment Name`
     `Targetlist Key`
     
- * **Kill Split**: This task will perform "Kill" action on a given Split in an Environment,  the fields below are required:
+ * **Kill Feature flag**: This task will perform "Kill" action on a given Feature flag in an Environment,  the fields below are required:
     `Workspace Name`
     `Environment Name`
-    `Split Name`
+    `Feature flag Name`
     
- * **Remove Split Definition**: This task will delete Split definition in a given Environment, the fields below are required, the plugin will check if Split definitions exists in the given environment, if it does not, the task is skipped, no errors returned:
+ * **Remove Feature flag Definition**: This task will delete Feature flag definition in a given Environment, the fields below are required, the plugin will check if Feature flag definitions exists in the given environment, if it does not, the task is skipped, no errors returned:
     `Workspace Name`
     `Environment Name`
-    `Split Name`
+    `Feature flag Name`
     
- * **Delete Split**: This task will delete a split that does not have any definitions in any environment, the fields below are required, the plugin will check if Split exists in the given workspace, if it does not, the task is skipped, no errors returned:
+ * **Delete Feature flag**: This task will delete a Feature flag that does not have any definitions in any environment, the fields below are required, the plugin will check if Feature flag exists in the given workspace, if it does not, the task is skipped, no errors returned:
     `Workspace Name`
-    `Split Name`
+    `Feature flag Name`
     
 ### YAML format
 ```yaml
-- split_name:
+- Feature_flag_name:
      treatment: "treatment_applied_to_this_entry"
      keys: "single_key_or_list"
      percentage: "integer between (0-100)"
@@ -90,43 +90,43 @@ The Split Definitions field should match the JSON structure accepted by Split Ad
 
 ### Examples
 
- * Split below has 3 treatments (on/off/unallocated), only "on" treatment contains targetlisted id "key1". For default rule, "on" is set to 80%, "off" is set to 10%, the plugin will assign the last 10% to "unallocated" treatment. 
+ * Feature flag below has 3 treatments (on/off/unallocated), only "on" treatment contains targetlisted id "key1". For default rule, "on" is set to 80%, "off" is set to 10%, the plugin will assign the last 10% to "unallocated" treatment. 
 ```yaml
-- percentage_less_100_split:
+- percentage_less_100_Feature_flag:
     treatment: "on"
     keys: ["key1"]
     percentage: "80"
-- percentage_less_100_split:
+- percentage_less_100_Feature_flag:
     treatment: "off"
     percentage: "10"
-- percentage_less_100_split:
+- percentage_less_100_Feature_flag:
     treatment: "unallocated"
 ```    
- * Split below contains only treatments, no percentages specified for default rule, the plugin will set the first treatment to 100% for default rule.
+ * Feature flag below contains only treatments, no percentages specified for default rule, the plugin will set the first treatment to 100% for default rule.
 ```yaml
-- no_rule_split:
+- no_rule_Feature_flag:
     treatment: "on"
-- no_rule_split:
+- no_rule_Feature_flag:
     treatment: "off"
 ```    
- * Split below contains only one treatments, no percentages specified for default rule, the plugin will add second treatment with name "SecondTreatment", and set the first treatment to 100% for default rule.
+ * Feature flag below contains only one treatments, no percentages specified for default rule, the plugin will add second treatment with name "SecondTreatment", and set the first treatment to 100% for default rule.
 ```yaml
-- one_treatment_split:
+- one_treatment_Feature_flag:
     treatment: "one"
 ```    
- * Split below has two treatments with their dynamic configs, treatment "off" has two keys in targetlist section, default rule has only "on" treatment set to 50%, the plugin will add "off" with 50%.
+ * Feature flag below has two treatments with their dynamic configs, treatment "off" has two keys in targetlist section, default rule has only "on" treatment set to 50%, the plugin will add "off" with 50%.
 ```yaml
-- correct_data_split:
+- correct_data_Feature_flag:
     treatment: "on"
     config: "{\\\"desc\\\" : \\\"this applies only to ON treatment\\\"}"
     percentage: "50"
-- correct_data_split:
+- correct_data_Feature_flag:
     treatment: "off"
     keys: ["key1", "key2"]
     config: "{\\\"desc\\\" : \\\"this applies only to OFF treatment\\\"}"
 ```
- * Split below only has the name, no other information is given, the plugin will add "on" and "off" treatments, and set default rule to "off" with 100%
+ * Feature flag below only has the name, no other information is given, the plugin will add "on" and "off" treatments, and set default rule to "off" with 100%
 ```yaml
-- no_treatment_split:
+- no_treatment_Feature_flag:
 ```
 For any questions, comments or issues, please contact [Split Support](mailto:support@split.io)
