@@ -1,7 +1,7 @@
 
 # Split Jenkins Plugin
 
-Jenkins plugin that uses Split Admin REST API to allow creating,  updating and deleting Feautre flags as part of Test automation and build workflow.
+Jenkins plugin that uses Split Admin REST API to allow creating,  updating and deleting Feature flags as part of Test automation and build workflow.
 Reference to Split Admin API can be found [here](https://docs.split.io/reference)
 
 ## Installation
