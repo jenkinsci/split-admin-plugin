@@ -1,5 +1,13 @@
-1.0.0 (Apr 15, 2020)
- - Initial public release
+2.0.0 (May 25, 2023)
+- BREAKING CHANGE: All references to the noun "split" have been changed to feature flag.
+- Other uses of "split" as in "Split API" or "splitTask" remain unchanged.
+- Tasks have been renamed:
+deleteSplitDefinition → deleteFeatureFlagDefinition
+- Files have been renamed:
+Split.java → FeatureFlag.java
+splits.yaml → featureFlags.yaml
+- Comments, prompts and text outputs have all be updated to replace "split" with "feature flag" as well.
+
 1.0.1 (Mar 29, 2022)
 - BREAKING CHANGE: Whitelist terminology is renamed to Targetlist, this will impact existing task.
 Before upgrading to the new version, please do the following:
@@ -7,4 +15,6 @@ Before upgrading to the new version, please do the following:
 2- Write down the details for each "AddKeyToWhiteList" task (workspace, environment, split, treatment and key values)
 3- Delete the "AddKeyToWhiteList" task and save the job
 4- Upgrade the Split Admin plugin
-5- Open the jobs and re-add the task "AddKeyToTargetList" with the previous variables values. 
+5- Open the jobs and re-add the task "AddKeyToTargetList" with the previous variables values.
+
+1.0.0 (Apr 15, 2020)
