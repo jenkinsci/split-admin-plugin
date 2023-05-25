@@ -1,0 +1,30 @@
+- correct_data_feature_flag:
+      treatment: "on"
+      config: "{\\\"desc\\\" : \\\"this applies only to ON treatment\\\"}"
+      percentage: "50"
+- correct_data_feature_flag:
+      treatment: "off"
+      keys: ["key1", "key2"]
+      config: "{\\\"desc\\\" : \\\"this applies only to OFF treatment\\\"}"
+- percentage_less_100_feature_flag:
+      treatment: "on"
+      keys: ["key1"]
+      percentage: "80"
+- percentage_less_100_feature_flag:
+      treatment: "off"
+      percentage: "10"
+- percentage_less_100_feature_flag:
+      treatment: "unallocated"
+- no_rule_feature_flag:
+      treatment: "on"
+- no_rule_feature_flag:
+      treatment: "off"
+- one_treatment_feature_flag:
+      treatment: "one"
+- no_treatment_feature_flag:
+- diiff_treatment_names_feature_flag:
+      treatment: "high"
+- diiff_treatment_names_feature_flag:
+      treatment: "low"
+- diiff_treatment_names_feature_flag:
+      treatment: "medium"

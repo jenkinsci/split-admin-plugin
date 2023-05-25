@@ -3,7 +3,7 @@
 
 <f:block>
 
-   <f:radioBlock name="splitTask" value="createSplitFromYAML" title="Create Split From YAML File" checked="${instance.splitTask.equals('createSplitFromYAML')? 'true':''}" inline="true">
+   <f:radioBlock name="splitTask" value="createFeatureFlagFromYAML" title="Create Feature Flag From YAML File" checked="${instance.splitTask.equals('createFeatureFlagFromYAML')? 'true':''}" inline="true">
     <f:entry title="Workspace Name" field="workspaceName">
         <f:textbox/>
     </f:entry>
@@ -13,16 +13,16 @@
     <f:entry title="TrafficType Name" field="trafficTypeName">
         <f:textbox />
     </f:entry>
-    <f:entry title="YAML File Name" field="splitYAMLFile" description="use '.' to point to the root of the project">
+    <f:entry title="YAML File Name" field="featureFlagYAMLFile" description="use '.' to point to the root of the project">
         <f:textbox />
     </f:entry>
    </f:radioBlock>
 
-   <f:radioBlock name="splitTask" value="createSplit" title="Create Split" checked="${instance.splitTask.equals('createSplit')? 'true':''}" inline="true">
+   <f:radioBlock name="splitTask" value="createFeatureFlag" title="Create Feature Flag" checked="${instance.splitTask.equals('createFeatureFlag')? 'true':''}" inline="true">
     <f:entry title="Workspace Name" field="workspaceName">
         <f:textbox/>
     </f:entry>
-    <f:entry title="Split Name" field="splitName">
+    <f:entry title="Feature Flag Name" field="featureFlagName">
         <f:textbox/>
     </f:entry>
     <f:entry title="TrafficType Name" field="trafficTypeName">
@@ -30,17 +30,17 @@
     </f:entry>
    </f:radioBlock>
 
-   <f:radioBlock name="splitTask" value="addToEnvironment" title="${%Add Split To Environment}" checked="${instance.splitTask.equals('addToEnvironment')? 'true':''}" inline="true">
+   <f:radioBlock name="splitTask" value="addToEnvironment" title="${%Add Feature Flag To Environment}" checked="${instance.splitTask.equals('addToEnvironment')? 'true':''}" inline="true">
     <f:entry title="Workspace Name" field="workspaceName">
         <f:textbox/>
     </f:entry>
     <f:entry title="Environment Name" field="environmentName">
         <f:textbox/>
     </f:entry>
-    <f:entry title="Split Name" field="splitName">
+    <f:entry title="Feature Flag Name" field="featureFlagName">
         <f:textbox/>
     </f:entry>
-    <f:entry title="Split Definitions" field="splitDefinitions">
+    <f:entry title="Feature Flag Definitions" field="featureFlagDefinitions">
         <f:textbox />
     </f:entry>
    </f:radioBlock>
@@ -52,7 +52,7 @@
     <f:entry title="Environment Name" field="environmentName">
         <f:textbox/>
     </f:entry>
-    <f:entry title="Split Name" field="splitName">
+    <f:entry title="Feature Flag Name" field="featureFlagName">
         <f:textbox/>
     </f:entry>
     <f:entry title="Treatment Name" field="treatmentName">
@@ -63,35 +63,35 @@
     </f:entry>
    </f:radioBlock>
 
-   <f:radioBlock name="splitTask" value="killSplit" title="${%Kill Split}" checked="${instance.splitTask.equals('killSplit')? 'true':''}" inline="true">
+   <f:radioBlock name="splitTask" value="killFeatureFlag" title="${%Kill Feature Flag}" checked="${instance.splitTask.equals('killFeatureFlag')? 'true':''}" inline="true">
     <f:entry title="Workspace Name" field="workspaceName">
         <f:textbox/>
     </f:entry>
     <f:entry title="Environment Name" field="environmentName">
         <f:textbox/>
     </f:entry>
-    <f:entry title="Split Name" field="splitName">
+    <f:entry title="Feature Flag Name" field="featureFlagName">
         <f:textbox/>
     </f:entry>
    </f:radioBlock>
 
-   <f:radioBlock name="splitTask" value="deleteSplitDefinition" title="Delete Split Definition" checked="${instance.splitTask.equals('deleteSplitDefinition')? 'true':''}" inline="true">
+   <f:radioBlock name="splitTask" value="deleteFeatureFlagDefinition" title="Delete Feature Flag Definition" checked="${instance.splitTask.equals('deleteFeatureFlagDefinition')? 'true':''}" inline="true">
     <f:entry title="Workspace Name" field="workspaceName">
         <f:textbox/>
     </f:entry>
     <f:entry title="Environment Name" field="environmentName">
         <f:textbox/>
     </f:entry>
-    <f:entry title="Split Name" field="splitName">
+    <f:entry title="Feature Flag Name" field="featureFlagName">
         <f:textbox/>
     </f:entry>
    </f:radioBlock>
 
-   <f:radioBlock name="splitTask" value="deleteSplit" title="Delete Split" checked="${instance.splitTask.equals('deleteSplit')? 'true':''}" inline="true">
+   <f:radioBlock name="splitTask" value="deleteFeatureFlag" title="Delete Feature Flag" checked="${instance.splitTask.equals('deleteFeatureFlag')? 'true':''}" inline="true">
     <f:entry title="Workspace Name" field="workspaceName">
         <f:textbox/>
     </f:entry>
-    <f:entry title="Split Name" field="splitName">
+    <f:entry title="Feature Flag Name" field="featureFlagName">
         <f:textbox/>
     </f:entry>
    </f:radioBlock>

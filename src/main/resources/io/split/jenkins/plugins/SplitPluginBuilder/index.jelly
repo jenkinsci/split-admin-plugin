@@ -8,7 +8,7 @@
         		</select>
     		</f:entry>
                 <h1> 
-	        	Split Name: ${it.splitName} 
+	        	Feature Flag Name: ${it.featureFlagName}
                 	Environment Name: ${it.environmentName} 
                 	Workspace Name: ${it.workspaceName} 
                 </h1>

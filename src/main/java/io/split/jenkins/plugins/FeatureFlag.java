@@ -4,29 +4,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
-* Class provide split structure when importing data from YAML file
-*
-* @author Bilal Al-Shshany
-*
-*/
-public class Split {
+ * Class provide feature flag structure when importing data from YAML file
+ *
+ * @author Bilal Al-Shshany
+ *
+ */
+public class FeatureFlag {
     private Treatments[] treatments;
-    private String splitName;
+    private String featureFlagName;
 
-    public Split() {
+    public FeatureFlag() {
         this.treatments = null;
-        this.splitName = null;
+        this.featureFlagName = null;
     }
 
     public Treatments[] getTreatments() {
         return this.treatments == null ? null : (Treatments[]) this.treatments.clone();
     }
-    
+
     @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(
-    value = "EI_EXPOSE_REP2",
-    justification = "I know what I'm doing")
+            value = "EI_EXPOSE_REP2",
+            justification = "I know what I'm doing")
     public void setTreatments(Treatments[] treatments) {
-    	this.treatments = treatments;
+        this.treatments = treatments;
     }
 
     public void addTreatment(Treatments newTreatment) {
@@ -37,15 +37,15 @@ public class Split {
             }
         }
         tempTreatments.add(newTreatment);
-    	this.treatments = tempTreatments.toArray(new Treatments[0]);
+        this.treatments = tempTreatments.toArray(new Treatments[0]);
     }
 
-    public String getSplitName() {
-    	return this.splitName;
+    public String getFeatureFlagName() {
+        return this.featureFlagName;
     }
 
-    public void setSplitName(String splitName) {
-    	this.splitName = splitName;
+    public void setFeatureFlagName(String featureFlagName) {
+        this.featureFlagName = featureFlagName;
     }
 
 }
