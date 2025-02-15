@@ -10,7 +10,7 @@ import hudson.model.TaskListener;
 import hudson.tasks.Builder;
 import hudson.tasks.BuildStepDescriptor;
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 import java.io.IOException;
 import jenkins.tasks.SimpleBuildStep;
@@ -225,7 +225,7 @@ public class SplitPluginBuilder extends Builder implements SimpleBuildStep {
         }
 
         @Override
-        public boolean configure(StaplerRequest req, JSONObject formData)
+        public boolean configure(StaplerRequest2 req, JSONObject formData)
                 throws FormException {
             setSplitAdminApiKey(req.getParameter("ext_split_admin_api_key"));
             setAdminBaseURL(req.getParameter("ext_admin_base_url"));

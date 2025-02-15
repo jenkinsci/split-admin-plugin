@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>4.31</version>
+        <version>5.7</version>
         <relativePath />
     </parent>
     <groupId>io.split.jenkins.plugins</groupId>
@@ -12,9 +12,10 @@
     <version>2.1-SNAPSHOT</version>
     <packaging>hpi</packaging>
     <properties>
+        <!-- https://www.jenkins.io/doc/developer/plugin-development/choosing-jenkins-baseline/ -->
+        <jenkins.baseline>2.479</jenkins.baseline>
         <!-- Baseline Jenkins version you use to build the plugin. Users must have this version 2.164.3 or newer to run. -->
-        <jenkins.version>2.164.3</jenkins.version>
-        <java.level>8</java.level>
+        <jenkins.version>${jenkins.baseline}.1</jenkins.version>
         <!-- Other properties you may want to use:
           ~ jenkins-test-harness.version: Jenkins Test Harness version you use to test the plugin. For Jenkins version >= 1.580.1 use JTH 2.0 or higher.
           ~ hpi-plugin.version: The HPI Maven Plugin version used by the plugin..
@@ -35,8 +36,8 @@
             <dependency>
                 <!-- Pick up common dependencies for 2.164.x: https://github.com/jenkinsci/bom#usage -->
                 <groupId>io.jenkins.tools.bom</groupId>
-                <artifactId>bom-2.164.x</artifactId>
-                <version>3</version>
+                <artifactId>bom-${jenkins.baseline}.x</artifactId>
+                <version>4136.vca_c3202a_7fd1</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
@@ -65,7 +66,6 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>28.2-jre</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
@@ -88,13 +88,6 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    <developers>
-      <developer>
-        <id>Bilal Alshahwany</id>
-        <name>Bilal Alshahwany</name>
-        <email>bilal.al-shahwany@split.io</email>
-      </developer>
-    </developers>
 
     <!-- Assuming you want to host on @jenkinsci:
     <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
